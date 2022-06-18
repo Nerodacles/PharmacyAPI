@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  pharmacyapi:
+    container_name: PharmacyAPI
+    restart: unless-stopped
+    image: nerodacles/pharmacyapi:latest
+    build:
+      context: ./
+      target: dev
+    networks:
+      - pharmacyapp
+    volumes:
+      - .:/src
+    command: npm run start:dev
+    ports:
+      - "8087:3000"
+    environment:
+      NODE_ENV: development
+      DEBUG: nodejs-docker-express:*
+
+networks:
+  pharmacyapp:
+    external: true
