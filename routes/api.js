@@ -2,10 +2,12 @@ const { json } = require('body-parser');
 var express = require('express');
 var router = express.Router();
 const Model = require('../models/model');
+const path = require('path');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Api side' });
+    // res.render('index', { title: 'Api side' });
+    res.sendFile(path.join(__dirname+'/api/index.html'));
 });
 
 //Post Method
@@ -74,7 +76,7 @@ router.delete('/delete/:id', async (req, res) => {
         const id = req.params.id;
         console.log(req.params.id)
         const data = await Model.findByIdAndDelete(id)
-        res.send(`Document with ${data.name} has been deleted..`)
+        res.send(`The drug "${data.name}" has been deleted..`)
     }
     catch (error) {
         res.status(400).json({ message: error.message })
