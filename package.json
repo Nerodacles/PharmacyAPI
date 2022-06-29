@@ -15,12 +15,16 @@
     "debug": "~2.6.9",
     "dotenv": "^16.0.1",
     "express": "~4.16.1",
+    "got": "^12.1.0",
     "http-errors": "~1.6.3",
-    "jade": "^1.11.0",
-    "mongoose": "^6.4.0",
-    "morgan": "~1.9.1"
+    "mongoose": "^6.4.1",
+    "morgan": "~1.9.1",
+    "pug": "^3.0.2",
+    "swagger-jsdoc": "^6.2.1",
+    "swagger-ui-express": "^4.4.0",
+    "uglify-js": "^3.16.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.16"
+    "nodemon": "^2.0.18"
   }
 }
