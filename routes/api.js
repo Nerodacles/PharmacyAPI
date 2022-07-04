@@ -7,6 +7,7 @@ const path = require('path');
 /* GET home page. */
 router.get('/', function(req, res, next) {
     var ip = req.headers['x-forwarded-for'].split(',')[0]
+    // res.sendFile(path.join(__dirname+'/api/index.html'));
     res.redirect('/docs')
     console.log(ip || req.socket.remoteAddress)
 });
