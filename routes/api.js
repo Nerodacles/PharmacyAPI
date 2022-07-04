@@ -2,7 +2,7 @@ const { json } = require('body-parser');
 var express = require('express');
 var router = express.Router();
 const Model = require('../models/model');
-const path = require('path');
+const auth = require('../helpers/jwt');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -44,8 +44,8 @@ router.get('/', function(req, res, next) {
 
 //Post Method
 router.post('/post', async (req, res) => {
-    const apiKey = req.get('API-Key')
-    if (!apiKey || apiKey !== process.env.API_KEY) {
+    const token = req.headers['api-key'];
+    if (!token || token !== process.env.API_KEY) {
         res.status(401).json({error: 'unauthorised'})
       } 
     else {
@@ -85,8 +85,13 @@ router.post('/post', async (req, res) => {
 //Get all Method
 router.get('/getAll', async (req, res) => {
     try{
-        const data = await Model.find();
-        res.json(data)
+        // if ( req.headers['api-key'] === process.env.API_KEY || auth.verifyToken(req.headers.authorization) ) {
+            const data = await Model.find();
+            res.json(data)
+        // }
+        // else {
+            // res.status(401).json({error: 'unauthorised'})
+        // }
     }
     catch(error){
         res.status(500).json({message: error.message})
@@ -127,13 +132,18 @@ router.get('/getAll', async (req, res) => {
 //Get by ID Method
 router.get('/getOne/:id', async (req, res) => {
     try{
-        const data = await Model.findById(req.params.id);
-        if(data === null){
-            res.status(500).json({message: data})
-        }
-        else{
-            res.json(data)
-        }
+        // if (req.headers['api-key'] === process.env.API_KEY || auth.verifyToken(req.headers.authorization)) {
+            const data = await Model.findById(req.params.id);
+            if(data === null){
+                res.status(500).json({message: data})
+            }
+            else{
+                res.json(data)
+            }
+        // }
+        // else {
+            // res.status(401).json({error: 'unauthorised'})
+        // }
     }
     catch(error){
         res.status(500).json({message: error.message})
@@ -147,7 +157,8 @@ router.get('/getOne/:id', async (req, res) => {
 *     tags:
 *       - Drugs
 *     security:
-*       - ApiKeyAuth: []
+*       - ApiKeyAuth1: []
+*       - ApiKeyAuth2: []
 *     summary: Update a Drug
 *     description: Update a drug
 *     parameters:
@@ -182,8 +193,8 @@ router.get('/getOne/:id', async (req, res) => {
 
 //Update by ID Method
 router.patch('/update/:id', async (req, res) => {
-    const apiKey = req.get('API-Key')
-    if (!apiKey || apiKey !== process.env.API_KEY) {
+    const token = req.headers['api-key'];
+    if (!token || token !== process.env.API_KEY) {
         res.status(401).json({error: 'unauthorised'})
     }   
     else {
@@ -234,8 +245,8 @@ router.patch('/update/:id', async (req, res) => {
 
 //Delete by ID Method
 router.delete('/delete/:id', async (req, res) => {
-    const apiKey = req.get('API-Key')
-    if (!apiKey || apiKey !== process.env.API_KEY) {
+    const token = req.headers['api-key'];
+    if (!token || token !== process.env.API_KEY) {
         res.status(401).json({error: 'unauthorised'})
     } 
     else {

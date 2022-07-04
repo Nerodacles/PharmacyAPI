@@ -1,13 +1,11 @@
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
-const unless = require('express-unless');
 
 // get password vars from .env file
 dotenv.config();
 
 function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1]
+    const token = req.headers.authorization
 
     if (token == null) return res.sendStatus(401)
 
@@ -16,8 +14,23 @@ function authenticateToken(req, res, next) {
 
         if (err) return res.sendStatus(403)
         req.user = user
+        console.log(user)
         next()
     })
+}
+
+function verifyToken(token) {
+    try {
+        if (jwt.verify(token, process.env.TOKEN_SECRET)) {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+    catch (err) {
+        return false
+    }
 }
 
 function generateAccessToken(username) {
@@ -25,6 +38,7 @@ function generateAccessToken(username) {
 }
 
 module.exports = {
+    generateAccessToken,
     authenticateToken,
-    generateAccessToken
+    verifyToken
 }

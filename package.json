@@ -7,6 +7,10 @@
     "start": "node ./bin/www",
     "start:dev": "nodemon ./bin/www"
   },
+  "ignore": [
+    "*.test.js", 
+    "dist/*"
+  ],
   "author": "Juanma Canahuate",
   "license": "MIT",
   "dependencies": {

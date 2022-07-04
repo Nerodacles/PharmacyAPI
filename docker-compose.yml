@@ -11,7 +11,7 @@ services:
       - pharmacyapp
     volumes:
       - .:/src
-    command: npm run start:dev
+    command: npm start
     ports:
       - "8087:3000"
     environment:

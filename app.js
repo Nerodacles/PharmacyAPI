@@ -30,7 +30,12 @@ const swaggerOptions = {
       ApiKeyAuth: {
         type: 'apiKey',
         in: 'header',
-        name: 'API-Key',
+        name: 'authorization',
+      },
+      ApiKeyAuth: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'api-key',
       },
     },
     info: {
@@ -49,11 +54,12 @@ const swaggerOptions = {
       servers: 
         [
           {url: 'https://pharmacy.jmcv.codes/api', description: 'Production'},
-          {url: 'https://pharmacy.jmcv.codes/health', description: 'HealthCkeck'}
+          {url: 'https://pharmacy.jmcv.codes/health', description: 'HealthCkeck'},
+          {url: 'https://pharmacy.jmcv.codes/users', description: 'Users'},
         ],
       }
     },
-    apis: [`${__dirname}/routes/api.js`, path.join(process.cwd(), '/routes/health.js')]
+    apis: [`${__dirname}/routes/api.js`, `${__dirname}/routes/health.js`, `${__dirname}/controllers/userController.js`],
 }
 
 var swaggerDocs = swaggerJsDoc(swaggerOptions);
@@ -85,12 +91,11 @@ app.use(express.static("api"));
 // middleware for authenticating token submitted with requests
 auth.authenticateToken.unless = unless;
 app.use(auth.authenticateToken.unless({
-    path: [
-        { url: '/users/login', methods: ['POST']},
-        { url: '/users/register', methods: ['POST']}
-    ]
+  path: [
+    { url: '/users/login', methods: ['POST']},
+    { url: '/users/register', methods: ['POST']},
+  ]
 }))
-
 
 // catch 404 and forward to error handler
 // app.use(function(req, res, next) {
@@ -101,7 +106,7 @@ app.use(auth.authenticateToken.unless({
 app.use(function(err, req, res, next) {
   // set headers 
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, authorization');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, authorization, API-Key');
 
   // set locals, only providing error in development
   res.locals.message = err.message;
@@ -113,7 +118,7 @@ app.use(function(err, req, res, next) {
 });
 
 app.use((req, res, next) => {
-  const token = req.get('authorization')
+  const token = req.headers.authorization || req.headers['API-Key'];
   if (!token) {
     res.status(401).json({error: 'unauthorised'})
   } else {

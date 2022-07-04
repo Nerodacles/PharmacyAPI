@@ -8,6 +8,7 @@ async function login({ username, password }) {
 
     // synchronously compare user entered password with hashed password
     if(bcrypt.compareSync(password, user.password)){
+        // Generate a token
         const token = auth.generateAccessToken(username);
 
         // call toJSON method applied during model instantiation
