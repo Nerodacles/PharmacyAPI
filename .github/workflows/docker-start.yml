@@ -1,11 +1,11 @@
 name: Docker Compose Actions Workflow
 on: push
 jobs:
-  test:
+  DockerCompose:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
       - name: Build the stack
         run: docker-compose up -d
-      - name: Test
-        run: docker run --network container:webapp-frontend appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8087/
+      - name: Test if it builded correctly
+        run: docker run --network container:PharmacyAPI appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8087/
