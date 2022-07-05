@@ -1,0 +1,25 @@
+name: Docker Compose Actions Workflow
+on: push
+jobs:
+  DockerCompose:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install npm packages
+        run: npm install
+      - name: Create env file
+        run: |
+          touch .env
+          echo "${{ secrets.DATABASE_URL }}" >> .env
+          echo "${{ secrets.URL }}" >> .env
+          echo "${{ secrets.USER }}" >> .env
+          echo "${{ secrets.PASSWORD }}" >> .env
+          echo "${{ secrets.USERADMIN }}" >> .env
+          echo "${{ secrets.PASSWORDADMIN }}" >> .env
+          echo "${{ secrets.TOKEN_SECRET }}" >> .env
+          echo "${{ secrets.API_KEY }}" >> .env
+          cat .env
+      - name: Build the stack
+        run: docker-compose up -d
+      - name: Test if it builded correctly
+        run: docker run --network container:PharmacyAPI appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8087/

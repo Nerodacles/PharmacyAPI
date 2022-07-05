@@ -1,5 +1,7 @@
 FROM node:14-alpine as base
 
+ENV PATH=${PATH}
+
 WORKDIR /src
 COPY package*.json /
 
