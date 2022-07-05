@@ -8,7 +8,8 @@ services:
       context: ./
       target: dev
     networks:
-      - pharmacyapp
+      pharmacyapp:
+        ipv4_address: 172.20.0.4
     volumes:
       - .:/src
     command: npm start
