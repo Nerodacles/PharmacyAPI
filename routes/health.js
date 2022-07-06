@@ -11,7 +11,10 @@
 *       - application/json
 *     responses:
 *       200:
-*         description: Drugs Found
+*         description: API operational
+*         schema:
+*           type: string
+*           example: "OK"
 */
 
 var express = require('express');

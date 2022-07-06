@@ -24,15 +24,12 @@ const swaggerOptions = {
   swaggerDefinition: {
     openai: '1.0.0',
     securityDefinitions: {
-      BasicAuth: {
-        type: 'basic',
-      },
       ApiKeyAuth: {
         type: 'apiKey',
         in: 'header',
         name: 'authorization',
       },
-      ApiKeyAuth: {
+      ApiKeyDef: {
         type: 'apiKey',
         in: 'header',
         name: 'api-key',

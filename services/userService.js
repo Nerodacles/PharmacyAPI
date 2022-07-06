@@ -17,14 +17,19 @@ async function login({ username, password }) {
 }
 
 async function register(params){
-
     // instantiate a user modal and save to mongoDB
-    const user = new User(params)
+    const user = new User(params);
     await user.save();
+    // call toJSON method applied during model instantiation
+    return user.toJSON();
+}
+
+async function getAll() {
+    // find all users in mongoDB
+    return await User.find({})
 }
 
 async function getById(id) {
-
     const user = await User.findById(id);
     // call toJSON method applied during model instantiation
     return user.toJSON()
@@ -33,5 +38,6 @@ async function getById(id) {
 module.exports = {
     login,
     register,
+    getAll,
     getById
 };

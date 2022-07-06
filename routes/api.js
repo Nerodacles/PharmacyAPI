@@ -21,11 +21,12 @@ router.get('/', function(req, res, next) {
 *     summary: Create a Drug
 *     description: Create a drug
 *     security:
-*       - ApiKeyAuth: []
+*       - ApiKeyDef: []
 *     parameters:
 *       - in: body
 *         name: drug
 *         description: name of the drug
+*         required: true
 *         schema:
 *           type: object
 *           required:
@@ -33,9 +34,22 @@ router.get('/', function(req, res, next) {
 *           properties:
 *             name:
 *               type: string
+*               description: Name of the drug
 *     responses:
 *       200:
 *         description: Drug created
+*         schema:
+*           type: object
+*           properties:
+*             name:
+*               type: string
+*               description: Name of the drug
+*             id:
+*               type: string
+*               description: Id of the drug
+*           example:
+*             - id: 62ae1de392d3f0b8a6
+*               name: Aspirina
 *       400:
 *         description: Bad request
 *       401:
@@ -76,6 +90,20 @@ router.post('/post', async (req, res) => {
 *     responses:
 *       200:
 *         description: Drugs Found
+*         schema:
+*           type: object
+*           properties:
+*             name:
+*               type: string
+*               description: Name of the drug
+*             id:
+*               type: string
+*               description: Id of the drug
+*           example:
+*             - id: 62ae1de392d3f0b8a6
+*               name: Aspirina
+*             - id: 62ae1de392d3f0b8a7
+*               name: Omeprazol
 *       400:
 *         description: Bad request
 *       401:
@@ -118,9 +146,22 @@ router.get('/getAll', async (req, res) => {
 *         properties:
 *           id:
 *             type: string
+*             description: Id of the drug
 *     responses:
 *       200:
 *         description: Drug is found
+*         schema:
+*           type: object
+*           properties:
+*             name:
+*               type: string
+*               description: Name of the drug
+*             id:
+*               type: string
+*               description: Id of the drug
+*           example:
+*             - id: 62ae1de392d3f0b8a6
+*               name: Aspirina
 *       400:
 *         description: Bad request
 *       401:
@@ -157,14 +198,14 @@ router.get('/getOne/:id', async (req, res) => {
 *     tags:
 *       - Drugs
 *     security:
-*       - ApiKeyAuth1: []
-*       - ApiKeyAuth2: []
+*       - ApiKeyDef: []
 *     summary: Update a Drug
 *     description: Update a drug
 *     parameters:
 *       - in: body
 *         name: drug
 *         description: name of the drug
+*         required: true
 *         schema:
 *           type: object
 *           required:
@@ -172,6 +213,7 @@ router.get('/getOne/:id', async (req, res) => {
 *           properties:
 *             name:
 *               type: string
+*               description: Name of the drug
 *       - in: path
 *         name: id
 *         description: Drug id
@@ -180,9 +222,22 @@ router.get('/getOne/:id', async (req, res) => {
 *         properties:
 *           id:
 *             type: string
+*             description: Id of the drug
 *     responses:
 *       200:
 *         description: Drug updated
+*         schema:
+*           type: object
+*           properties:
+*             name:
+*               type: string
+*               description: Name of the drug
+*             id:
+*               type: string
+*               description: Id of the drug
+*           example:
+*             id: 62ae1de392d3f0b8a6
+*             name: Aspirina
 *       400:
 *         description: Bad request
 *       401:
@@ -220,7 +275,7 @@ router.patch('/update/:id', async (req, res) => {
 *     tags:
 *       - Drugs
 *     security:
-*       - ApiKeyAuth: []
+*       - ApiKeyDef: []
 *     summary: Delete a Drug
 *     description: Delete a drug
 *     produces:
@@ -234,9 +289,13 @@ router.patch('/update/:id', async (req, res) => {
 *         properties:
 *           id:
 *             type: string
+*             description: Id of the drug
 *     responses:
 *       200:
 *         description: Drug deleted
+*         schema:
+*           type: string
+*           example: The drug 'Omeprazol' has been deleted
 *       400:
 *         description: Bad request
 *       401:
