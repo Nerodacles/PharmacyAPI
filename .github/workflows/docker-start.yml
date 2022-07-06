@@ -10,16 +10,15 @@ jobs:
       - name: Create env file
         run: |
           touch .env
-          echo "${{ secrets.DATABASE_URL }}" >> .env
-          echo "${{ secrets.URL }}" >> .env
-          echo "${{ secrets.USER }}" >> .env
-          echo "${{ secrets.PASSWORD }}" >> .env
-          echo "${{ secrets.USERADMIN }}" >> .env
-          echo "${{ secrets.PASSWORDADMIN }}" >> .env
-          echo "${{ secrets.TOKEN_SECRET }}" >> .env
-          echo "${{ secrets.API_KEY }}" >> .env
-          cat .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+          echo "URL=${{ secrets.URL }}" >> .env
+          echo "USER=${{ secrets.USER }}" >> .env
+          echo "PASSWORD=${{ secrets.PASSWORD }}" >> .env
+          echo "USERADMIN=${{ secrets.USERADMIN }}" >> .env
+          echo "PASSWORDADMIN=${{ secrets.PASSWORDADMIN }}" >> .env
+          echo "TOKEN_SECRET=${{ secrets.TOKEN_SECRET }}" >> .env
+          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
       - name: Build the stack
-        run: docker-compose up -d
+        run: docker-compose up -d --force-recreate
       - name: Test if it builded correctly
         run: docker run --network container:PharmacyAPI appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8087/
