@@ -21,4 +21,4 @@ jobs:
       - name: Build the stack
         run: docker-compose up -d --force-recreate
       - name: Test if it builded correctly
-        run: docker run --network container:PharmacyAPI appropriate/curl -s --retry 10 --retry-connrefused http://localhost:8087/
+        run: curl -s --retry 30 --retry-connrefused http://localhost:8087/
