@@ -62,6 +62,7 @@ const swaggerOptions = {
 var swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 var app = express();
+app.disable('x-powered-by');
 
 const PORT = process.env.PORT || 8087;
 
@@ -102,7 +103,7 @@ app.use(auth.authenticateToken.unless({
 // error handler
 app.use(function(err, req, res, next) {
   // set headers 
-  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Origin', 'https://pharmacy.jmcv.codes');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, authorization, API-Key');
 
   // set locals, only providing error in development

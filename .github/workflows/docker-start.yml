@@ -18,7 +18,6 @@ jobs:
           echo "PASSWORDADMIN=${{ secrets.PASSWORDADMIN }}" >> .env
           echo "TOKEN_SECRET=${{ secrets.TOKEN_SECRET }}" >> .env
           echo "API_KEY=${{ secrets.API_KEY }}" >> .env
-          cat .env
       - name: Build the stack
         run: docker-compose up -d --force-recreate
       - name: Test if it builded correctly

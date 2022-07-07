@@ -260,7 +260,7 @@ router.patch('/update/:id', async (req, res) => {
             const result = await Model.findByIdAndUpdate(
                 id, updatedData, options
             )
-            res.send(result)
+            res.end(escapeHtml(result))
         }
         catch (error) {
             res.status(400).json({ message: error.message })
@@ -313,7 +313,7 @@ router.delete('/delete/:id', async (req, res) => {
             const id = req.params.id;
             console.log(req.params.id)
             const data = await Model.findByIdAndDelete(id)
-            res.send(`The drug "${data.name}" has been deleted..`)
+            res.end('The drug has been deleted.' + escapeHtml(data.name))
         }
         catch (error) {
             res.status(400).json({ message: error.message })
