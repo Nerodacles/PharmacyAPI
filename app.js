@@ -63,7 +63,8 @@ var swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 var app = express();
 
-const port = process.env.PORT || 8087;
+const PORT = process.env.PORT || 8087;
+console.log(process.env)
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -123,6 +124,6 @@ app.use((req, res, next) => {
   }
 })
 
-app.listen(port, () => console.log(`Server listening on port ${port}!`));
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}!`));
 
 module.exports = app;
