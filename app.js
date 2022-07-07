@@ -4,8 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var express = require('express');
+const helmet = require("helmet");
 var database = require('./db/conn');
 const bodyParser= require('body-parser')
+const rateLimit = require("express-rate-limit");
 
 var swaggerJsDoc = require('swagger-jsdoc');
 var swaggerUi = require('swagger-ui-express');
@@ -62,9 +64,15 @@ const swaggerOptions = {
 var swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 var app = express();
+app.use(helmet());
 app.disable('x-powered-by');
 
 const PORT = process.env.PORT || 8087;
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30 // limit each IP to 100 requests per windowMs
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -80,6 +88,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', users);
+app.use("/api/", limiter);
 app.use('/api', apiRouter);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/health', healthRouter);

@@ -8,7 +8,7 @@
     "start:dev": "nodemon ./bin/www"
   },
   "ignore": [
-    "*.test.js", 
+    "*.test.js",
     "dist/*"
   ],
   "author": "Juanma Canahuate",
@@ -20,8 +20,10 @@
     "debug": "~2.6.9",
     "dotenv": "^16.0.1",
     "express": "~4.16.1",
+    "express-rate-limit": "^6.4.0",
     "express-unless": "^2.1.0",
     "got": "^12.1.0",
+    "helmet": "^5.1.0",
     "http-errors": "~1.6.3",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.4.1",
