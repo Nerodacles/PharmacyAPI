@@ -64,8 +64,6 @@ var swaggerDocs = swaggerJsDoc(swaggerOptions);
 var app = express();
 
 const PORT = process.env.PORT || 8087;
-console.log(process.env.DATABASE_URL)
-console.log(process.env.URL)
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
