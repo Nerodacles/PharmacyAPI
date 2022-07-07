@@ -26,6 +26,6 @@ jobs:
           url: https://pharmacy.jmcv.codes/health
           method: "POST"
           accept: 200,201,204
-          timeout: 1000
+          timeout: 20000
           log-response: false
           retries: 20
