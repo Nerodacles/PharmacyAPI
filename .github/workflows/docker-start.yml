@@ -24,7 +24,7 @@ jobs:
         uses: indiesdev/curl@v1.1
         with:
           url: https://pharmacy.jmcv.codes/health
-          method: "POST"
+          method: "GET"
           accept: 200,201,204
           timeout: 20000
           log-response: false
