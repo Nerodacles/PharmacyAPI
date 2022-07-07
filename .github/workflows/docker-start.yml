@@ -20,5 +20,12 @@ jobs:
           echo "API_KEY=${{ secrets.API_KEY }}" >> .env
       - name: Build the stack
         run: docker-compose up -d --force-recreate
-      - name: Test if it builded correctly
-        run: curl -s --retry 30 --retry-connrefused http://localhost:8087/
+      - name: "Test API"
+        uses: indiesdev/curl@v1.1
+        with:
+          url: https://pharmacy.jmcv.codes/health
+          method: "POST"
+          accept: 200,201,204
+          timeout: 2000
+          log-response: false
+          retries: 3
