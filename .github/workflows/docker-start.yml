@@ -20,12 +20,16 @@ jobs:
           echo "API_KEY=${{ secrets.API_KEY }}" >> .env
       - name: Build the stack
         run: docker-compose up -d --force-recreate
-      - name: "Test API"
-        uses: indiesdev/curl@v1.1
-        with:
-          url: https://pharmacy.jmcv.codes/health
-          method: "GET"
-          accept: 200,201,204
-          timeout: 20000
-          log-response: false
-          retries: 20
+#      - name: "Sleep for 2 min"
+#        uses: jakejarvis/wait-action@master
+#        with:
+#          time: '2m'
+#      - name: "Test API"
+#        uses: indiesdev/curl@v1.1
+#        with:
+#          url: "https://pharmacy.jmcv.codes/health"
+#          method: "GET"
+#          accept: 200,201,204
+#          timeout: 20000
+#          log-response: true
+#          retries: 20
