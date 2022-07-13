@@ -22,7 +22,7 @@ var router = express.Router();
 var path = require('path');
 
 router.get('/', function(req, res, next) {
-    res.sendStatus('OK')
+    res.sendStatus(200)
   });
 
 module.exports = router;
