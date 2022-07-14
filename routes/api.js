@@ -61,7 +61,7 @@ router.post('/post', async (req, res) => {
     const token = req.headers['api-key'];
     if (!token || token !== process.env.API_KEY) {
         res.status(401).json({error: 'unauthorised'})
-      } 
+    } 
     else {
         const drugs = new Model({
             name: req.body.name,
@@ -260,7 +260,7 @@ router.patch('/update/:id', async (req, res) => {
             const result = await Model.findByIdAndUpdate(
                 id, updatedData, options
             )
-            res.end(escapeHtml(result))
+            res.end(`The drug with id ${id} has been updated`)
         }
         catch (error) {
             res.status(400).json({ message: error.message })
@@ -313,7 +313,7 @@ router.delete('/delete/:id', async (req, res) => {
             const id = req.params.id;
             console.log(req.params.id)
             const data = await Model.findByIdAndDelete(id)
-            res.end('The drug has been deleted.' + escapeHtml(data.name))
+            res.end(`The drug with id ${id} has been deleted`)
         }
         catch (error) {
             res.status(400).json({ message: error.message })
