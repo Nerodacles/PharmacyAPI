@@ -124,9 +124,12 @@ router.post('/register', (req, res, next) => {
 */
 
 router.post('/login', (req, res, next) => {
-    const { username, password} = req.body;
+    const { username, password } = req.body;
     userServices.login({ username, password })
         .then(user => {
+            if (user == 'err'){
+                res.sendStatus(400)
+            }
             res.json(user)
         }
     ).catch(err => next(res.sendStatus(400)))

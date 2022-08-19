@@ -88,12 +88,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', users);
-app.use("/api/", limiter);
+app.use('/api/', limiter);
 app.use('/api', apiRouter);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/health', healthRouter);
 app.use(express.static("api"));
-
 
 // middleware for authenticating token submitted with requests
 auth.authenticateToken.unless = unless;
@@ -105,14 +104,14 @@ app.use(auth.authenticateToken.unless({
 }))
 
 // catch 404 and forward to error handler
-// app.use(function(req, res, next) {
-//   next(createError(404));
-// });
+app.use(function(req, res, next) {
+  next(createError(404));
+});
 
 // error handler
 app.use(function(err, req, res, next) {
   // set headers 
-  res.header('Access-Control-Allow-Origin', 'https://pharmacy.jmcv.codes');
+  res.header('Access-Control-Allow-Origin', 'https://pharmacy.jmcv.codes/api');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, authorization, API-Key');
 
   // set locals, only providing error in development

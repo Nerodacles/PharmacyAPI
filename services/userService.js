@@ -2,7 +2,6 @@ const User = require('../models/userModel')
 const bcrypt = require('bcryptjs');
 const auth = require('../helpers/jwt.js')
 
-
 async function login({ username, password }) {
     const user = await User.findOne({username});
 
@@ -14,6 +13,7 @@ async function login({ username, password }) {
         // call toJSON method applied during model instantiation
         return {...user.toJSON(), token}
     }
+    return 'err'
 }
 
 async function register(params){
