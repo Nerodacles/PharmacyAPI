@@ -3,6 +3,19 @@ var express = require('express');
 var router = express.Router();
 const Model = require('../models/model');
 const auth = require('../helpers/jwt');
+var multer = require('multer');
+var fs = require('fs');
+var path = require('path');
+
+var storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads')
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname)
+    }
+});
+var upload = multer({ storage: storage });
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -22,19 +35,27 @@ router.get('/', function(req, res, next) {
 *     description: Create a drug
 *     security:
 *       - ApiKeyDef: []
+*     consumes:
+*       multipart/form-data
+*     produces:
+*       application/json
 *     parameters:
-*       - in: body
-*         name: drug
-*         description: name of the drug
+*       - name: name
+*         in: formData
+*         description: Name of the drug
 *         required: true
-*         schema:
-*           type: object
-*           required:
-*             - name
-*           properties:
-*             name:
-*               type: string
-*               description: Name of the drug
+*         type: string
+*         default: Omeprazol
+*       - name: description
+*         in: formData
+*         description: Description of the drug
+*         required: true
+*         type: string
+*         default: El omeprazol se utiliza en el tratamiento de la dispepsia, úlcera péptica, enfermedades por reflujo gastroesofágico y el síndrome de Zollinger-Ellison.
+*       - name: cover
+*         in: formData
+*         type: file
+*         description: Cover art for the drug
 *     responses:
 *       200:
 *         description: Drug created
@@ -44,12 +65,21 @@ router.get('/', function(req, res, next) {
 *             name:
 *               type: string
 *               description: Name of the drug
+*             description:
+*               type: string
+*               description: Description of the drug
 *             id:
 *               type: string
 *               description: Id of the drug
+*             cover:
+*               type: file
+*               description: Cover art of the drug
 *           example:
 *             - id: 62ae1de392d3f0b8a6
 *               name: Aspirina
+*               description: Test
+*               cover: pharmacy.jmcv.codes/uploads/test2.img
+*               createdTime: 2022-08-24T23:42:24.084Z
 *       400:
 *         description: Bad request
 *       401:
@@ -57,7 +87,7 @@ router.get('/', function(req, res, next) {
 */
 
 //Post Method
-router.post('/post', async (req, res) => {
+router.post('/post', upload.single('cover'), async (req, res) => {
     const token = req.headers['api-key'];
     if (!token || token !== process.env.API_KEY) {
         res.status(401).json({error: 'unauthorised'})
@@ -65,6 +95,8 @@ router.post('/post', async (req, res) => {
     else {
         const drugs = new Model({
             name: req.body.name,
+            description: req.body.description,
+            cover: path.join('pharmacy.jmcv.codes/uploads/' + req.file.filename)
         })
         try {
             const dataToSave = await drugs.save();
@@ -96,14 +128,23 @@ router.post('/post', async (req, res) => {
 *             name:
 *               type: string
 *               description: Name of the drug
+*             description:
+*               type: string
+*               description: Description of the drug
 *             id:
 *               type: string
 *               description: Id of the drug
 *           example:
 *             - id: 62ae1de392d3f0b8a6
 *               name: Aspirina
+*               description: Test
+*               cover: pharmacy.jmcv.codes/uploads/test.img
+*               createdTime: 2022-08-24T23:42:24.084Z
 *             - id: 62ae1de392d3f0b8a7
 *               name: Omeprazol
+*               description: Test2
+*               cover: pharmacy.jmcv.codes/uploads/test2.img
+*               createdTime: 2022-08-24T23:42:24.084Z
 *       400:
 *         description: Bad request
 *       401:
@@ -156,12 +197,18 @@ router.get('/getAll', async (req, res) => {
 *             name:
 *               type: string
 *               description: Name of the drug
+*             description:
+*               type: string
+*               description: Description of the drug
 *             id:
 *               type: string
 *               description: Id of the drug
 *           example:
 *             - id: 62ae1de392d3f0b8a6
 *               name: Aspirina
+*               description: Test
+*               cover: pharmacy.jmcv.codes/uploads/test.img
+*               createdTime: 2022-08-24T23:42:24.084Z
 *       400:
 *         description: Bad request
 *       401:
@@ -202,27 +249,22 @@ router.get('/getOne/:id', async (req, res) => {
 *     summary: Update a Drug
 *     description: Update a drug
 *     parameters:
-*       - in: body
-*         name: drug
-*         description: name of the drug
+*       - name: name
+*         in: formData
+*         description: Name of the drug
 *         required: true
-*         schema:
-*           type: object
-*           required:
-*             - name
-*           properties:
-*             name:
-*               type: string
-*               description: Name of the drug
-*       - in: path
-*         name: id
-*         description: Drug id
-*         required:
-*           - id
-*         properties:
-*           id:
-*             type: string
-*             description: Id of the drug
+*         type: string
+*         default: Omeprazol
+*       - name: description
+*         in: formData
+*         description: Description of the drug
+*         required: true
+*         type: string
+*         default: El omeprazol se utiliza en el tratamiento de la dispepsia, úlcera péptica, enfermedades por reflujo gastroesofágico y el síndrome de Zollinger-Ellison.
+*       - name: cover
+*         in: formData
+*         type: file
+*         description: Cover art for the drug
 *     responses:
 *       200:
 *         description: Drug updated
@@ -232,12 +274,18 @@ router.get('/getOne/:id', async (req, res) => {
 *             name:
 *               type: string
 *               description: Name of the drug
+*             description:
+*               type: string
+*               description: Description of the drug
 *             id:
 *               type: string
 *               description: Id of the drug
 *           example:
 *             id: 62ae1de392d3f0b8a6
 *             name: Aspirina
+*             description: Test
+*             cover: pharmacy.jmcv.codes/uploads/test.img
+*             createdTime: 2022-08-24T23:42:24.084Z
 *       400:
 *         description: Bad request
 *       401:
