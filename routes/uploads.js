@@ -8,10 +8,11 @@ const limiter = rateLimit({
     max: 50 // limit each IP to 50 requests per windowMs
 });
 
+let absolutePath = path.resolve(__dirname, '../uploads')
 router.use(limiter)
 
 router.get('/:filename', function(req, res, next) {
-    res.sendFile(path.join(__dirname, '../uploads' + req.url))
+    res.sendFile(absolutePath + decodeURI(req.url))
 });
 
 module.exports = router;

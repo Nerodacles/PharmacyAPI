@@ -4,23 +4,27 @@ var router = express.Router();
 const Model = require('../models/model');
 const auth = require('../helpers/jwt');
 var multer = require('multer');
-var fs = require('fs');
+let fs = require('fs-extra');
 var path = require('path');
+
+function generateName(coverName){
+    return coverName.trim();
+}
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads')
-    },
+        let path = 'uploads';
+        fs.mkdirsSync(path);
+        cb(null, path) },
     filename: (req, file, cb) => {
-        cb(null, file.originalname)
-    }
+        cb(null, generateName(file.originalname)) }
 });
 var upload = multer({ storage: storage });
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
     var ip = req.headers['x-forwarded-for'].split(',')[0]
-    // res.sendFile(path.join(__dirname+'/api/index.html'));
+
     res.redirect('/docs')
     console.log(ip || req.socket.remoteAddress)
 });
@@ -88,23 +92,20 @@ router.get('/', function(req, res, next) {
 
 //Post Method
 router.post('/post', upload.single('cover'), async (req, res) => {
-    const token = req.headers['api-key'];
-    if (!token || token !== process.env.API_KEY) {
-        res.status(401).json({error: 'unauthorised'})
-    } 
+    const token = req.headers['api-key']; 
+
+    if (!token || token !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) } 
     else {
         const drugs = new Model({
             name: req.body.name,
             description: req.body.description,
-            cover: path.join('pharmacy.jmcv.codes/uploads/' + req.file.filename)
+            cover: path.join('pharmacy.jmcv.codes/uploads/' + req.file.filename.trim())
         })
         try {
             const dataToSave = await drugs.save();
             res.status(200).json(dataToSave)
         }
-        catch (error) {
-            res.status(400).json({message: error.message})
-        }
+        catch (error) { res.status(400).json({message: error.message}) }
     }
 })
 
@@ -162,9 +163,7 @@ router.get('/getAll', async (req, res) => {
             // res.status(401).json({error: 'unauthorised'})
         // }
     }
-    catch(error){
-        res.status(500).json({message: error.message})
-    }
+    catch(error){ res.status(500).json({message: error.message}) }
 })
 
 /**
@@ -222,20 +221,12 @@ router.get('/getOne/:id', async (req, res) => {
     try{
         // if (req.headers['api-key'] === process.env.API_KEY || auth.verifyToken(req.headers.authorization)) {
             const data = await Model.findById(req.params.id);
-            if(data === null){
-                res.status(500).json({message: data})
-            }
-            else{
-                res.json(data)
-            }
+            if(data === null){ res.status(500).json({message: data}) }
+            else{ res.json(data) }
         // }
-        // else {
-            // res.status(401).json({error: 'unauthorised'})
-        // }
+        // else { res.status(401).json({error: 'unauthorised'}) }
     }
-    catch(error){
-        res.status(500).json({message: error.message})
-    }
+    catch(error){ res.status(500).json({message: error.message}) }
 })
 
 /**
@@ -305,14 +296,10 @@ router.patch('/update/:id', async (req, res) => {
             const id = req.params.id;
             const updatedData = req.body;
             const options = { new: true };
-            const result = await Model.findByIdAndUpdate(
-                id, updatedData, options
-            )
+            const result = await Model.findByIdAndUpdate( id, updatedData, options )
             res.end(`The drug with id ${id} has been updated`)
         }
-        catch (error) {
-            res.status(400).json({ message: error.message })
-        }
+        catch (error) { res.status(400).json({ message: error.message }) }
     }
 })
 
@@ -353,9 +340,7 @@ router.patch('/update/:id', async (req, res) => {
 //Delete by ID Method
 router.delete('/delete/:id', async (req, res) => {
     const token = req.headers['api-key'];
-    if (!token || token !== process.env.API_KEY) {
-        res.status(401).json({error: 'unauthorised'})
-    } 
+    if (!token || token !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) } 
     else {
         try {
             const id = req.params.id;
@@ -363,9 +348,7 @@ router.delete('/delete/:id', async (req, res) => {
             const data = await Model.findByIdAndDelete(id)
             res.end(`The drug with id ${id} has been deleted`)
         }
-        catch (error) {
-            res.status(400).json({ message: error.message })
-        }
+        catch (error) { res.status(400).json({ message: error.message }) }
     }
 })
 
