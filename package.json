@@ -31,7 +31,7 @@
     "morgan": "~1.10.0",
     "multer": "^1.4.5-lts.1",
     "pug": "^3.0.2",
-    "swagger-jsdoc": "^6.2.1",
+    "swagger-jsdoc": "^6.2.2",
     "swagger-ui-express": "^4.5.0",
     "uglify-js": "^3.16.3"
   },
