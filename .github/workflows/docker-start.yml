@@ -1,5 +1,7 @@
 name: Docker Compose Actions Workflow
-on: release
+on:
+  release:
+    types: [published]
 jobs:
   DockerCompose:
     runs-on: self-hosted
