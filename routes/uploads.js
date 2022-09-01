@@ -9,7 +9,7 @@ const limiter = rateLimit({
     keyGenerator: (req, res) => req.header('x-real-ip')
 });
 
-let absolutePath = path.resolve(__dirname, '../uploads')
+let absolutePath = path.resolve('/home/nero/PharmacyApp/PharmacyFiles/Images')
 router.use(limiter)
 
 router.get('/:filename', function(req, res, next) {
