@@ -3,11 +3,28 @@ var express = require('express');
 var router = express.Router();
 const Model = require('../models/model');
 const auth = require('../helpers/jwt');
+var multer = require('multer');
+let fs = require('fs-extra');
+var path = require('path');
+
+function generateName(coverName){
+    return coverName.trim();
+}
+
+var storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        let path = 'uploads';
+        fs.mkdirsSync(path);
+        cb(null, path) },
+    filename: (req, file, cb) => {
+        cb(null, generateName(file.originalname)) }
+});
+var upload = multer({ storage: storage });
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
     var ip = req.headers['x-forwarded-for'].split(',')[0]
-    // res.sendFile(path.join(__dirname+'/api/index.html'));
+
     res.redirect('/docs')
     console.log(ip || req.socket.remoteAddress)
 });
@@ -22,19 +39,27 @@ router.get('/', function(req, res, next) {
 *     description: Create a drug
 *     security:
 *       - ApiKeyDef: []
+*     consumes:
+*       multipart/form-data
+*     produces:
+*       application/json
 *     parameters:
-*       - in: body
-*         name: drug
-*         description: name of the drug
+*       - name: name
+*         in: formData
+*         description: Name of the drug
 *         required: true
-*         schema:
-*           type: object
-*           required:
-*             - name
-*           properties:
-*             name:
-*               type: string
-*               description: Name of the drug
+*         type: string
+*         default: Omeprazol
+*       - name: description
+*         in: formData
+*         description: Description of the drug
+*         required: true
+*         type: string
+*         default: El omeprazol se utiliza en el tratamiento de la dispepsia, úlcera péptica, enfermedades por reflujo gastroesofágico y el síndrome de Zollinger-Ellison.
+*       - name: cover
+*         in: formData
+*         type: file
+*         description: Cover art for the drug
 *     responses:
 *       200:
 *         description: Drug created
@@ -44,12 +69,21 @@ router.get('/', function(req, res, next) {
 *             name:
 *               type: string
 *               description: Name of the drug
+*             description:
+*               type: string
+*               description: Description of the drug
 *             id:
 *               type: string
 *               description: Id of the drug
+*             cover:
+*               type: file
+*               description: Cover art of the drug
 *           example:
 *             - id: 62ae1de392d3f0b8a6
 *               name: Aspirina
+*               description: Test
+*               cover: pharmacy.jmcv.codes/uploads/test2.img
+*               createdTime: 2022-08-24T23:42:24.084Z
 *       400:
 *         description: Bad request
 *       401:
@@ -57,22 +91,21 @@ router.get('/', function(req, res, next) {
 */
 
 //Post Method
-router.post('/post', async (req, res) => {
-    const token = req.headers['api-key'];
-    if (!token || token !== process.env.API_KEY) {
-        res.status(401).json({error: 'unauthorised'})
-    } 
+router.post('/post', upload.single('cover'), async (req, res) => {
+    const token = req.headers['api-key']; 
+
+    if (!token || token !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) } 
     else {
         const drugs = new Model({
             name: req.body.name,
+            description: req.body.description,
+            cover: path.join('pharmacy.jmcv.codes/uploads/' + req.file.filename.trim())
         })
         try {
             const dataToSave = await drugs.save();
             res.status(200).json(dataToSave)
         }
-        catch (error) {
-            res.status(400).json({message: error.message})
-        }
+        catch (error) { res.status(400).json({message: error.message}) }
     }
 })
 
@@ -96,14 +129,23 @@ router.post('/post', async (req, res) => {
 *             name:
 *               type: string
 *               description: Name of the drug
+*             description:
+*               type: string
+*               description: Description of the drug
 *             id:
 *               type: string
 *               description: Id of the drug
 *           example:
 *             - id: 62ae1de392d3f0b8a6
 *               name: Aspirina
+*               description: Test
+*               cover: pharmacy.jmcv.codes/uploads/test.img
+*               createdTime: 2022-08-24T23:42:24.084Z
 *             - id: 62ae1de392d3f0b8a7
 *               name: Omeprazol
+*               description: Test2
+*               cover: pharmacy.jmcv.codes/uploads/test2.img
+*               createdTime: 2022-08-24T23:42:24.084Z
 *       400:
 *         description: Bad request
 *       401:
@@ -121,9 +163,7 @@ router.get('/getAll', async (req, res) => {
             // res.status(401).json({error: 'unauthorised'})
         // }
     }
-    catch(error){
-        res.status(500).json({message: error.message})
-    }
+    catch(error){ res.status(500).json({message: error.message}) }
 })
 
 /**
@@ -156,12 +196,18 @@ router.get('/getAll', async (req, res) => {
 *             name:
 *               type: string
 *               description: Name of the drug
+*             description:
+*               type: string
+*               description: Description of the drug
 *             id:
 *               type: string
 *               description: Id of the drug
 *           example:
 *             - id: 62ae1de392d3f0b8a6
 *               name: Aspirina
+*               description: Test
+*               cover: pharmacy.jmcv.codes/uploads/test.img
+*               createdTime: 2022-08-24T23:42:24.084Z
 *       400:
 *         description: Bad request
 *       401:
@@ -175,20 +221,12 @@ router.get('/getOne/:id', async (req, res) => {
     try{
         // if (req.headers['api-key'] === process.env.API_KEY || auth.verifyToken(req.headers.authorization)) {
             const data = await Model.findById(req.params.id);
-            if(data === null){
-                res.status(500).json({message: data})
-            }
-            else{
-                res.json(data)
-            }
+            if(data === null){ res.status(500).json({message: data}) }
+            else{ res.json(data) }
         // }
-        // else {
-            // res.status(401).json({error: 'unauthorised'})
-        // }
+        // else { res.status(401).json({error: 'unauthorised'}) }
     }
-    catch(error){
-        res.status(500).json({message: error.message})
-    }
+    catch(error){ res.status(500).json({message: error.message}) }
 })
 
 /**
@@ -202,27 +240,22 @@ router.get('/getOne/:id', async (req, res) => {
 *     summary: Update a Drug
 *     description: Update a drug
 *     parameters:
-*       - in: body
-*         name: drug
-*         description: name of the drug
+*       - name: name
+*         in: formData
+*         description: Name of the drug
 *         required: true
-*         schema:
-*           type: object
-*           required:
-*             - name
-*           properties:
-*             name:
-*               type: string
-*               description: Name of the drug
-*       - in: path
-*         name: id
-*         description: Drug id
-*         required:
-*           - id
-*         properties:
-*           id:
-*             type: string
-*             description: Id of the drug
+*         type: string
+*         default: Omeprazol
+*       - name: description
+*         in: formData
+*         description: Description of the drug
+*         required: true
+*         type: string
+*         default: El omeprazol se utiliza en el tratamiento de la dispepsia, úlcera péptica, enfermedades por reflujo gastroesofágico y el síndrome de Zollinger-Ellison.
+*       - name: cover
+*         in: formData
+*         type: file
+*         description: Cover art for the drug
 *     responses:
 *       200:
 *         description: Drug updated
@@ -232,12 +265,18 @@ router.get('/getOne/:id', async (req, res) => {
 *             name:
 *               type: string
 *               description: Name of the drug
+*             description:
+*               type: string
+*               description: Description of the drug
 *             id:
 *               type: string
 *               description: Id of the drug
 *           example:
 *             id: 62ae1de392d3f0b8a6
 *             name: Aspirina
+*             description: Test
+*             cover: pharmacy.jmcv.codes/uploads/test.img
+*             createdTime: 2022-08-24T23:42:24.084Z
 *       400:
 *         description: Bad request
 *       401:
@@ -257,14 +296,10 @@ router.patch('/update/:id', async (req, res) => {
             const id = req.params.id;
             const updatedData = req.body;
             const options = { new: true };
-            const result = await Model.findByIdAndUpdate(
-                id, updatedData, options
-            )
+            const result = await Model.findByIdAndUpdate( id, updatedData, options )
             res.end(`The drug with id ${id} has been updated`)
         }
-        catch (error) {
-            res.status(400).json({ message: error.message })
-        }
+        catch (error) { res.status(400).json({ message: error.message }) }
     }
 })
 
@@ -305,9 +340,7 @@ router.patch('/update/:id', async (req, res) => {
 //Delete by ID Method
 router.delete('/delete/:id', async (req, res) => {
     const token = req.headers['api-key'];
-    if (!token || token !== process.env.API_KEY) {
-        res.status(401).json({error: 'unauthorised'})
-    } 
+    if (!token || token !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) } 
     else {
         try {
             const id = req.params.id;
@@ -315,9 +348,7 @@ router.delete('/delete/:id', async (req, res) => {
             const data = await Model.findByIdAndDelete(id)
             res.end(`The drug with id ${id} has been deleted`)
         }
-        catch (error) {
-            res.status(400).json({ message: error.message })
-        }
+        catch (error) { res.status(400).json({ message: error.message }) }
     }
 })
 

@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.7'
 services:
   pharmacyapi:
     container_name: PharmacyAPI
@@ -12,6 +12,7 @@ services:
         ipv4_address: 172.20.0.4
     volumes:
       - .:/src
+      - /home/nero/PharmacyApp/PharmacyFiles/Images:/src/uploads
     command: npm start
     ports:
       - "8087:3000"

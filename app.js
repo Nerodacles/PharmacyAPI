@@ -21,6 +21,7 @@ const errors = require('./helpers/errorHandlers.js');
 var indexRouter = require('./routes/index');
 var apiRouter = require('./routes/api');
 var healthRouter = require('./routes/health');
+var uploadsRouter = require('./routes/uploads');
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -71,7 +72,8 @@ const PORT = process.env.PORT || 8087;
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 30 // limit each IP to 100 requests per windowMs
+  max: 100, // limit each IP to 50 requests per windowMs
+  keyGenerator: (req, res) => req.header('x-real-ip')
 });
 
 // view engine setup
@@ -79,6 +81,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json({limit: '50mb'}));
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -88,16 +91,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', users);
-app.use('/api/', limiter);
+app.use('/api', limiter);
 app.use('/api', apiRouter);
+// app.use(express.static("api"));
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/health', healthRouter);
-app.use(express.static("api"));
+app.use('/uploads', uploadsRouter);
 
 // middleware for authenticating token submitted with requests
 auth.authenticateToken.unless = unless;
 app.use(auth.authenticateToken.unless({
   path: [
+    { url: '/uploads/:filename', methods: ['GET'] },
     { url: '/users/login', methods: ['POST']},
     { url: '/users/register', methods: ['POST']},
   ]

@@ -4,8 +4,20 @@ const { Schema } = mongoose;
 const drugSchema = new mongoose.Schema({
     name: {
         required: true,
-        type: String
+        type: String,
     },
+    description: {
+        required: true,
+        type: String,
+    },
+    cover: {
+        type: String,
+        required: false
+    },
+    createdTime: {
+        type: Date,
+        default: Date.now
+    }
 })
 
 drugSchema.set('toJSON', {

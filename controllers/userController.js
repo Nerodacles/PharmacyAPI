@@ -47,15 +47,12 @@ const userServices = require('../services/userService')
 */
 
 router.post('/register', (req, res, next) => {
-    const {password} = req.body
+    const { password } = req.body
     const salt = bcrypt.genSaltSync(10);
     req.body.password = bcrypt.hashSync(password, salt);
 
-    userServices.register(req.body).then(
-        () => res.sendStatus(200)
-    ).catch(
-        err => next(err)
-    )
+    userServices.register(req.body).then( () => res.sendStatus(200) )
+    .catch( err => next(err) )
 })
 
 /**
@@ -127,9 +124,7 @@ router.post('/login', (req, res, next) => {
     const { username, password } = req.body;
     userServices.login({ username, password })
         .then(user => {
-            if (user == 'err'){
-                res.sendStatus(400)
-            }
+            if (user == 'err'){ res.sendStatus(400) }
             res.json(user)
         }
     ).catch(err => next(res.sendStatus(400)))
@@ -190,14 +185,10 @@ router.post('/login', (req, res, next) => {
 router.get('/All', (req, res, next) => {
     if (req.headers['api-key'] === process.env.API_KEY) {
         userServices.getAll()
-            .then(users => {
-                res.json(users)
-            }
-        ).catch(err => next(err))
+        .then(users => { res.json(users) } )
+        .catch(err => next(err))
     }
-    else {
-        res.sendStatus(401)
-    }
+    else { res.sendStatus(401) }
 })
 
 /**
@@ -251,9 +242,9 @@ router.get('/All', (req, res, next) => {
 */
 
 router.get('/:id', (req, res, next) => {
-    userServices.getById(req.params.id).then(
-        (user) => res.json(user)
-    ).catch(err => next(err))
+    userServices.getById(req.params.id)
+    .then( (user) => res.json(user))
+    .catch(err => next(err))
 })
 
 module.exports = router;
