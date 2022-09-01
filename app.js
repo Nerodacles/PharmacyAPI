@@ -72,7 +72,8 @@ const PORT = process.env.PORT || 8087;
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 50 requests per windowMs
+  max: 100, // limit each IP to 50 requests per windowMs
+  keyGenerator: (req, res) => req.header('x-real-ip')
 });
 
 // view engine setup
@@ -96,7 +97,6 @@ app.use('/api', apiRouter);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/health', healthRouter);
 app.use('/uploads', uploadsRouter);
-// app.get('/ip', (request, response) => response.send(request.ip))
 
 // middleware for authenticating token submitted with requests
 auth.authenticateToken.unless = unless;
