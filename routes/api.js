@@ -13,7 +13,7 @@ function generateName(coverName){
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        let path = 'uploads';
+        let path = '/home/nero/PharmacyApp/PharmacyFiles/Images';
         fs.mkdirsSync(path);
         cb(null, path) },
     filename: (req, file, cb) => {
