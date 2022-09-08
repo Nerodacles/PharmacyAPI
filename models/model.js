@@ -10,6 +10,11 @@ const drugSchema = new mongoose.Schema({
         required: true,
         type: String,
     },
+    price: {
+        required: true,
+        type: Number,
+        default: 200,
+    },
     cover: {
         type: String,
         required: false

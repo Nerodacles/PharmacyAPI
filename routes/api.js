@@ -56,6 +56,12 @@ router.get('/', function(req, res, next) {
 *         required: true
 *         type: string
 *         default: El omeprazol se utiliza en el tratamiento de la dispepsia, úlcera péptica, enfermedades por reflujo gastroesofágico y el síndrome de Zollinger-Ellison.
+*       - name: price
+*         in: formData
+*         description: Price of the drug
+*         required: true
+*         type: number
+*         default: 10
 *       - name: cover
 *         in: formData
 *         type: file
@@ -72,6 +78,9 @@ router.get('/', function(req, res, next) {
 *             description:
 *               type: string
 *               description: Description of the drug
+*             price:
+*               type: number
+*               description: Price of the drug
 *             id:
 *               type: string
 *               description: Id of the drug
@@ -82,6 +91,7 @@ router.get('/', function(req, res, next) {
 *             - id: 62ae1de392d3f0b8a6
 *               name: Aspirina
 *               description: Test
+*               price: 200
 *               cover: pharmacy.jmcv.codes/uploads/test2.img
 *               createdTime: 2022-08-24T23:42:24.084Z
 *       400:
@@ -132,6 +142,9 @@ router.post('/post', upload.single('cover'), async (req, res) => {
 *             description:
 *               type: string
 *               description: Description of the drug
+*             price:
+*               type: number
+*               description: Price of the drug
 *             id:
 *               type: string
 *               description: Id of the drug
@@ -139,11 +152,13 @@ router.post('/post', upload.single('cover'), async (req, res) => {
 *             - id: 62ae1de392d3f0b8a6
 *               name: Aspirina
 *               description: Test
+*               price: 200
 *               cover: pharmacy.jmcv.codes/uploads/test.img
 *               createdTime: 2022-08-24T23:42:24.084Z
 *             - id: 62ae1de392d3f0b8a7
 *               name: Omeprazol
 *               description: Test2
+*               price: 200
 *               cover: pharmacy.jmcv.codes/uploads/test2.img
 *               createdTime: 2022-08-24T23:42:24.084Z
 *       400:
@@ -199,6 +214,9 @@ router.get('/getAll', async (req, res) => {
 *             description:
 *               type: string
 *               description: Description of the drug
+*             price:
+*               type: number
+*               description: Price of the drug
 *             id:
 *               type: string
 *               description: Id of the drug
@@ -206,6 +224,7 @@ router.get('/getAll', async (req, res) => {
 *             - id: 62ae1de392d3f0b8a6
 *               name: Aspirina
 *               description: Test
+*               price: 200
 *               cover: pharmacy.jmcv.codes/uploads/test.img
 *               createdTime: 2022-08-24T23:42:24.084Z
 *       400:
@@ -252,6 +271,12 @@ router.get('/getOne/:id', async (req, res) => {
 *         required: true
 *         type: string
 *         default: El omeprazol se utiliza en el tratamiento de la dispepsia, úlcera péptica, enfermedades por reflujo gastroesofágico y el síndrome de Zollinger-Ellison.
+*       - name: price
+*         in: formData
+*         description: Price of the drug
+*         required: true
+*         type: number
+*         default: 100
 *       - name: cover
 *         in: formData
 *         type: file
@@ -268,6 +293,9 @@ router.get('/getOne/:id', async (req, res) => {
 *             description:
 *               type: string
 *               description: Description of the drug
+*             price:
+*               type: number
+*               description: Price of the drug
 *             id:
 *               type: string
 *               description: Id of the drug
@@ -275,6 +303,7 @@ router.get('/getOne/:id', async (req, res) => {
 *             id: 62ae1de392d3f0b8a6
 *             name: Aspirina
 *             description: Test
+*             price: 200
 *             cover: pharmacy.jmcv.codes/uploads/test.img
 *             createdTime: 2022-08-24T23:42:24.084Z
 *       400:

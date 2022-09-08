@@ -121,6 +121,7 @@ router.post('/register', (req, res, next) => {
 */
 
 router.post('/login', (req, res, next) => {
+    console.log(req.body)
     const { username, password } = req.body;
     userServices.login({ username, password })
         .then(user => {
