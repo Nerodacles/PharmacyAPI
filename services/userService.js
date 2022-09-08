@@ -35,9 +35,34 @@ async function getById(id) {
     return user.toJSON()
 }
 
+async function addFav(authToken, fav) {
+    const username = auth.getUserByToken(authToken).data
+    const user = await User.findOne({username});
+    user.favorites.push(fav)
+    await user.save();
+    return user.toJSON()
+}
+
+async function delFav(authToken, fav) {
+    const username = auth.getUserByToken(authToken).data
+    const user = await User.findOne({username});
+    user.favorites = user.favorites.filter(f => f !== fav)
+    await user.save();
+    return user.toJSON()
+}
+
+async function getFavs(authToken) {
+    const username = auth.getUserByToken(authToken).data
+    const user = await User.findOne({username});
+    return user.favorites
+}
+
 module.exports = {
     login,
     register,
     getAll,
-    getById
+    getById,
+    addFav,
+    delFav,
+    getFavs,
 };

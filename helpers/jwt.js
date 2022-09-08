@@ -33,6 +33,10 @@ function verifyToken(token) {
     }
 }
 
+function getUserByToken(token) {
+    return jwt.verify(token, process.env.TOKEN_SECRET)
+}
+
 function generateAccessToken(username) {
     return jwt.sign({data: username}, process.env.TOKEN_SECRET, { expiresIn: '1h' });
 }
@@ -40,5 +44,6 @@ function generateAccessToken(username) {
 module.exports = {
     generateAccessToken,
     authenticateToken,
-    verifyToken
+    verifyToken,
+    getUserByToken
 }

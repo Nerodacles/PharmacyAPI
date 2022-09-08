@@ -14,6 +14,7 @@ var swaggerUi = require('swagger-ui-express');
 
 var {unless} = require('express-unless');
 var users = require('./controllers/userController.js');
+var favs = require('./controllers/favController.js');
 const auth = require('./helpers/jwt.js');
 const errors = require('./helpers/errorHandlers.js');
 
@@ -59,7 +60,12 @@ const swaggerOptions = {
         ],
       }
     },
-    apis: [`${__dirname}/routes/api.js`, `${__dirname}/routes/health.js`, `${__dirname}/controllers/userController.js`],
+    apis: [
+      `${__dirname}/routes/api.js`,
+      `${__dirname}/routes/health.js`,
+      `${__dirname}/controllers/userController.js`,
+      `${__dirname}/controllers/favController.js`,
+    ],
 }
 
 var swaggerDocs = swaggerJsDoc(swaggerOptions);
@@ -91,6 +97,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', users);
+app.use('/favs', favs);
 app.use('/api', limiter);
 app.use('/api', apiRouter);
 // app.use(express.static("api"));
