@@ -244,7 +244,9 @@ router.get('/getOne/:id', async (req, res) => {
         if ( await userService.hasFavorite(req.headers.authorization, req.params.id)) {
             res.json({ data, favorite: true })
         }
-        res.json({ data, favorite: false })
+        else {
+            res.json({ data, favorite: false })
+        }
     }
     catch(error){ res.status(500).json({message: error.message}) }
 })
