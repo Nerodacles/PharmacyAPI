@@ -6,6 +6,7 @@ const auth = require('../helpers/jwt');
 var multer = require('multer');
 let fs = require('fs-extra');
 var path = require('path');
+let userService = require('../services/userService');
 
 function generateName(coverName){
     return coverName.trim();
@@ -238,12 +239,12 @@ router.get('/getAll', async (req, res) => {
 //Get by ID Method
 router.get('/getOne/:id', async (req, res) => {
     try{
-        // if (req.headers['api-key'] === process.env.API_KEY || auth.verifyToken(req.headers.authorization)) {
-            const data = await Model.findById(req.params.id);
-            if(data === null){ res.status(500).json({message: data}) }
-            else{ res.json(data) }
-        // }
-        // else { res.status(401).json({error: 'unauthorised'}) }
+        const data = await Model.findById(req.params.id);
+        if(data === null){ res.status(500).json({message: data}) }
+        if ( await userService.hasFavorite(req.headers.authorization, req.params.id)) {
+            res.json({ data, favorite: true })
+        }
+        res.json({ data, favorite: false })
     }
     catch(error){ res.status(500).json({message: error.message}) }
 })

@@ -14,27 +14,22 @@ function authenticateToken(req, res, next) {
 
         if (err) return res.sendStatus(403)
         req.user = user
-        console.log(user)
         next()
     })
 }
 
 function verifyToken(token) {
     try {
-        if (jwt.verify(token, process.env.TOKEN_SECRET)) {
-            return true
-        }
-        else {
-            return false
-        }
-    }
-    catch (err) {
+        // if token is older than 1h, return false and delete token
+        jwt.verify(token, process.env.TOKEN_SECRET, {maxAge: '1h'})
+        return true
+    } catch (err) {
         return false
     }
 }
 
 function getUserByToken(token) {
-    return jwt.verify(token, process.env.TOKEN_SECRET)
+    return jwt.decode(token)
 }
 
 function generateAccessToken(username) {

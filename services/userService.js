@@ -35,19 +35,12 @@ async function getById(id) {
     return user.toJSON()
 }
 
-async function addFav(authToken, fav) {
+async function modifyFavs(authToken, fav) {
     const username = auth.getUserByToken(authToken).data
     const user = await User.findOne({username});
-    user.favorites.push(fav)
-    await user.save();
-    return user.toJSON()
-}
-
-async function delFav(authToken, fav) {
-    const username = auth.getUserByToken(authToken).data
-    const user = await User.findOne({username});
-    user.favorites = user.favorites.filter(f => f !== fav)
-    await user.save();
+    if (user.favorites.includes(fav)) { user.favorites = user.favorites.filter((favorite) => favorite !== fav) }
+    else { user.favorites.push(fav) }
+    await user.save()
     return user.toJSON()
 }
 
@@ -57,12 +50,18 @@ async function getFavs(authToken) {
     return user.favorites
 }
 
+async function hasFavorite(authToken, id) {
+    const username = auth.getUserByToken(authToken)?.data
+    const user = await User.findOne({username});
+    return user.favorites.includes(id)
+}
+
 module.exports = {
     login,
     register,
     getAll,
     getById,
-    addFav,
-    delFav,
+    modifyFavs,
+    hasFavorite,
     getFavs,
 };

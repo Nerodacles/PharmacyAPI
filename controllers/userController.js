@@ -121,11 +121,11 @@ router.post('/register', (req, res, next) => {
 */
 
 router.post('/login', (req, res, next) => {
-    console.log(req.body)
     const { username, password } = req.body;
     userServices.login({ username, password })
         .then(user => {
             if (user == 'err'){ res.sendStatus(400) }
+            res.setHeader('authorization', user.token)
             res.json(user)
         }
     ).catch(err => next(res.sendStatus(400)))

@@ -15,6 +15,7 @@ var swaggerUi = require('swagger-ui-express');
 var {unless} = require('express-unless');
 var users = require('./controllers/userController.js');
 var favs = require('./controllers/favController.js');
+var tokens = require('./controllers/tokenController.js');
 const auth = require('./helpers/jwt.js');
 const errors = require('./helpers/errorHandlers.js');
 
@@ -65,6 +66,7 @@ const swaggerOptions = {
       `${__dirname}/routes/health.js`,
       `${__dirname}/controllers/userController.js`,
       `${__dirname}/controllers/favController.js`,
+      `${__dirname}/controllers/tokenController.js`,
     ],
 }
 
@@ -97,6 +99,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', users);
+app.use('/token', tokens);
 app.use('/favs', favs);
 app.use('/api', limiter);
 app.use('/api', apiRouter);
