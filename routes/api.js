@@ -1,11 +1,11 @@
 const { json } = require('body-parser');
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 const Model = require('../models/model');
 const auth = require('../helpers/jwt');
-var multer = require('multer');
+let multer = require('multer');
 let fs = require('fs-extra');
-var path = require('path');
+let path = require('path');
 let userService = require('../services/userService');
 let drugService = require('../services/drugService');
 
@@ -13,7 +13,7 @@ function generateName(coverName){
     return coverName.trim();
 }
 
-var storage = multer.diskStorage({
+let storage = multer.diskStorage({
     destination: (req, file, cb) => {
         let path = 'uploads';
         fs.mkdirsSync(path);
@@ -21,7 +21,7 @@ var storage = multer.diskStorage({
     filename: (req, file, cb) => {
         cb(null, generateName(file.originalname)) }
 });
-var upload = multer({ storage: storage });
+let upload = multer({ storage: storage });
 
 /* GET home page. */
 router.get('/', function(req, res, next) {

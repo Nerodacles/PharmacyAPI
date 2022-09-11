@@ -1,34 +1,33 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var express = require('express');
+let createError = require('http-errors');
+let express = require('express');
+let path = require('path');
+let cookieParser = require('cookie-parser');
+let logger = require('morgan');
 const helmet = require("helmet");
-var database = require('./db/conn');
+let database = require('./db/conn');
 const bodyParser= require('body-parser')
 const rateLimit = require("express-rate-limit");
 
-var swaggerJsDoc = require('swagger-jsdoc');
-var swaggerUi = require('swagger-ui-express');
-var { unless } = require('express-unless');
+let swaggerJsDoc = require('swagger-jsdoc');
+let swaggerUi = require('swagger-ui-express');
+let { unless } = require('express-unless');
 
 // Controllers
-var users = require('./controllers/userController.js');
-var favs = require('./controllers/favController.js');
-var tokens = require('./controllers/tokenController.js');
-var tags = require('./controllers/tagsController.js');
-var search = require('./controllers/searchController.js');
+let users = require('./controllers/userController.js');
+let favs = require('./controllers/favController.js');
+let tokens = require('./controllers/tokenController.js');
+let tags = require('./controllers/tagsController.js');
+let search = require('./controllers/searchController.js');
 
 // Helpers
 const auth = require('./helpers/jwt.js');
 const errors = require('./helpers/errorHandlers.js');
 
 // Routers
-var indexRouter = require('./routes/index');
-var apiRouter = require('./routes/api');
-var healthRouter = require('./routes/health');
-var uploadsRouter = require('./routes/uploads');
+let indexRouter = require('./routes/index');
+let apiRouter = require('./routes/api');
+let healthRouter = require('./routes/health');
+let uploadsRouter = require('./routes/uploads');
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -88,7 +87,7 @@ const testOptions = {
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
-var app = express().disable('x-powered-by').use(helmet());
+let app = express().disable('x-powered-by').use(helmet());
 
 const PORT = process.env.PORT || 8087;
 

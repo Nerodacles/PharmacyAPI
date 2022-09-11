@@ -26,7 +26,7 @@ async function register(params){
 
 async function getAll() {
     // find all users in mongoDB
-    return await User.find({})
+    return User.find({})
 }
 
 async function getById(id) {

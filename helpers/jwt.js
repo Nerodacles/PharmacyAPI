@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 
-// get password vars from .env file
+// get password lets from .env file
 dotenv.config();
 
 function authenticateToken(req, res, next) {

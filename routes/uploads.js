@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var path = require('path');
+let express = require('express');
+let router = express.Router();
+let path = require('path');
 const rateLimit = require('express-rate-limit');
 
 const limiter = rateLimit({
