@@ -88,9 +88,7 @@ const testOptions = {
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
-var app = express();
-app.use(helmet());
-app.disable('x-powered-by');
+var app = express().disable('x-powered-by').use(helmet());
 
 const PORT = process.env.PORT || 8087;
 

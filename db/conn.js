@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 
 const mongoose = require('mongoose');
@@ -19,3 +18,12 @@ database.on('error', (error) => {
 database.once('connected', () => {
     console.log('Database Connected');
 })
+
+database.once('disconnected', () => {
+    console.log('Database Disconnected');
+})
+
+module.exports = {
+    database,
+    mongoose
+}
