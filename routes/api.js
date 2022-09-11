@@ -14,6 +14,7 @@ function generateName(coverName){
 }
 
 let storage = multer.diskStorage({
+    limits: {fileSize: 1000000},
     destination: (req, file, cb) => {
         let path = 'uploads';
         fs.mkdirsSync(path);
@@ -21,7 +22,7 @@ let storage = multer.diskStorage({
     filename: (req, file, cb) => {
         cb(null, generateName(file.originalname)) }
 });
-let upload = multer({ storage: storage });
+let upload = multer({ storage: storage, limits: {fileSize: 1000000} });
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
