@@ -7,6 +7,7 @@ var multer = require('multer');
 let fs = require('fs-extra');
 var path = require('path');
 let userService = require('../services/userService');
+let drugService = require('../services/drugService');
 
 function generateName(coverName){
     return coverName.trim();
@@ -24,10 +25,7 @@ var upload = multer({ storage: storage });
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    var ip = req.headers['x-forwarded-for'].split(',')[0]
-
     res.redirect('/docs')
-    console.log(ip || req.socket.remoteAddress)
 });
 
 /**
@@ -63,6 +61,14 @@ router.get('/', function(req, res, next) {
 *         required: true
 *         type: number
 *         default: 10
+*       - name: tags
+*         in: formData
+*         description: Tags of the drug
+*         required: true
+*         type: array
+*         items:
+*           type: string
+*         default: ["dolor de estomago", "dolor de cabeza"]
 *       - name: cover
 *         in: formData
 *         type: file
@@ -82,6 +88,11 @@ router.get('/', function(req, res, next) {
 *             price:
 *               type: number
 *               description: Price of the drug
+*             tags:
+*               type: array
+*               items:
+*                 type: string
+*               description: Tags of the drug
 *             id:
 *               type: string
 *               description: Id of the drug
@@ -93,6 +104,7 @@ router.get('/', function(req, res, next) {
 *               name: Aspirina
 *               description: Test
 *               price: 200
+*               tags: ["dolor de cabeza", "dolor de estomago"]
 *               cover: pharmacy.jmcv.codes/uploads/test2.img
 *               createdTime: 2022-08-24T23:42:24.084Z
 *       400:
@@ -107,16 +119,22 @@ router.post('/post', upload.single('cover'), async (req, res) => {
 
     if (!token || token !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) } 
     else {
+        if (req.body.tags) {
+            splitTags = req.body.tags.split(',');
+            req.body.tags = splitTags;
+        }
         const drugs = new Model({
             name: req.body.name,
             description: req.body.description,
-            cover: path.join('pharmacy.jmcv.codes/uploads/' + req.file.filename.trim())
+            cover: path.join('pharmacy.jmcv.codes/uploads/' + req.file.filename.trim()),
+            price: req.body.price,
         })
         try {
             const dataToSave = await drugs.save();
+            await drugService.modifyTags(drugs.id, req.body.tags);
             res.status(200).json(dataToSave)
         }
-        catch (error) { res.status(400).json({message: error.message}) }
+        catch (error) {res.status(400).json({message: error.message})}
     }
 })
 
@@ -146,6 +164,11 @@ router.post('/post', upload.single('cover'), async (req, res) => {
 *             price:
 *               type: number
 *               description: Price of the drug
+*             tags:
+*               type: array
+*               items:
+*                 type: string
+*               description: Tags of the drug
 *             id:
 *               type: string
 *               description: Id of the drug
@@ -154,12 +177,14 @@ router.post('/post', upload.single('cover'), async (req, res) => {
 *               name: Aspirina
 *               description: Test
 *               price: 200
+*               tags: ["dolor de estomago", "dolor de cabeza"]
 *               cover: pharmacy.jmcv.codes/uploads/test.img
 *               createdTime: 2022-08-24T23:42:24.084Z
 *             - id: 62ae1de392d3f0b8a7
 *               name: Omeprazol
 *               description: Test2
 *               price: 200
+*               tags: ["dolor de estomago", "dolor de cabeza"]
 *               cover: pharmacy.jmcv.codes/uploads/test2.img
 *               createdTime: 2022-08-24T23:42:24.084Z
 *       400:
@@ -218,6 +243,11 @@ router.get('/getAll', async (req, res) => {
 *             price:
 *               type: number
 *               description: Price of the drug
+*             tags:
+*               type: array
+*               items:
+*                 type: string
+*               description: Tags of the drug
 *             id:
 *               type: string
 *               description: Id of the drug
@@ -226,6 +256,7 @@ router.get('/getAll', async (req, res) => {
 *               name: Aspirina
 *               description: Test
 *               price: 200
+*               tags: ["dolor de estomago", "dolor de cabeza"]
 *               cover: pharmacy.jmcv.codes/uploads/test.img
 *               createdTime: 2022-08-24T23:42:24.084Z
 *       400:
@@ -280,6 +311,14 @@ router.get('/getOne/:id', async (req, res) => {
 *         required: true
 *         type: number
 *         default: 100
+*       - name: tags
+*         in: formData
+*         description: Tags of the drug
+*         required: true
+*         type: array
+*         items:
+*           type: string
+*         default: ["dolor de estomago", "dolor de cabeza"]
 *       - name: cover
 *         in: formData
 *         type: file
@@ -299,6 +338,11 @@ router.get('/getOne/:id', async (req, res) => {
 *             price:
 *               type: number
 *               description: Price of the drug
+*             tags:
+*               type: array
+*               items:
+*                 type: string
+*               description: Tags of the drug
 *             id:
 *               type: string
 *               description: Id of the drug

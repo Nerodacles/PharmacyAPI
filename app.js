@@ -11,11 +11,15 @@ const rateLimit = require("express-rate-limit");
 
 var swaggerJsDoc = require('swagger-jsdoc');
 var swaggerUi = require('swagger-ui-express');
-
 var {unless} = require('express-unless');
+
+// Controllers
 var users = require('./controllers/userController.js');
 var favs = require('./controllers/favController.js');
 var tokens = require('./controllers/tokenController.js');
+var tags = require('./controllers/tagsController.js');
+
+// Helpers
 const auth = require('./helpers/jwt.js');
 const errors = require('./helpers/errorHandlers.js');
 
@@ -55,18 +59,22 @@ const swaggerOptions = {
       },
       servers: 
         [
-          {url: 'https://pharmacy.jmcv.codes/api', description: 'Production'},
-          {url: 'https://pharmacy.jmcv.codes/health', description: 'HealthCkeck'},
+          {url: 'https://pharmacy.jmcv.codes/api', description: 'Drugs API'},
           {url: 'https://pharmacy.jmcv.codes/users', description: 'Users'},
+          {url: 'https://pharmacy.jmcv.codes/favs', description: 'Favs'},
+          {url: 'https://pharmacy.jmcv.codes/tokens', description: 'Tokens'},
+          {url: 'https://pharmacy.jmcv.codes/tags', description: 'Tags'},
+          {url: 'https://pharmacy.jmcv.codes/health', description: 'HealthCkeck'},
         ],
       }
     },
     apis: [
       `${__dirname}/routes/api.js`,
-      `${__dirname}/routes/health.js`,
       `${__dirname}/controllers/userController.js`,
       `${__dirname}/controllers/favController.js`,
       `${__dirname}/controllers/tokenController.js`,
+      `${__dirname}/controllers/tagsController.js`,
+      `${__dirname}/routes/health.js`,
     ],
 }
 
@@ -106,6 +114,7 @@ app.use('/api', apiRouter);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/health', healthRouter);
 app.use('/uploads', uploadsRouter);
+app.use('/tags', tags);
 
 // middleware for authenticating token submitted with requests
 auth.authenticateToken.unless = unless;
