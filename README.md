@@ -15,6 +15,10 @@
 
 [![CodeQL](https://github.com/MichaelCurrin/badge-generator/workflows/CodeQL/badge.svg)](https://github.com/Nerodacles/PharmacyApi/actions?query=workflow%3ACodeQL "Code quality workflow status")
 [![Known Vulnerabilities](https://snyk.io/test/github/MichaelCurrin/badge-generator/badge.svg?targetFile=package.json)](https://snyk.io/test/github/nerodacles/pharmacyapi?targetFile=package.json "Snyk vulnerabilities")
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Nerodacles_PharmacyAPI&metric=bugs)](https://sonarcloud.io/summary/new_code?id=Nerodacles_PharmacyAPI)
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Nerodacles_PharmacyAPI&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Nerodacles_PharmacyAPI)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=Nerodacles_PharmacyAPI&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=Nerodacles_PharmacyAPI)
 
 [![Package - Typescript](https://img.shields.io/github/package-json/dependency-version/nerodacles/pharmacyapi/express?logo=express&logoColor=white)](https://www.npmjs.com/package/express "Go to Express on NPM")
 [![Package - Typescript](https://img.shields.io/github/package-json/dependency-version/nerodacles/pharmacyapi/mongoose?logo=mongoose&logoColor=white)](https://www.npmjs.com/package/mongoose "Go to Mongoose on NPM")
