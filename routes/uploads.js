@@ -13,7 +13,7 @@ let absolutePath = path.resolve(__dirname, '../uploads')
 router.use(limiter)
 
 router.get('/:filename', function(req, res, next) {
-    file = path.normalize(req.url)
+    let file = path.normalize(req.url)
     res.sendFile(absolutePath + decodeURI(file))
 });
 

@@ -35,25 +35,42 @@ async function getById(id) {
     return user.toJSON()
 }
 
+function isUserNameValid(username) {
+    const res = /^[a-z0-9_\.]+$/.exec(username);
+    const valid = !!res;
+    return valid;
+}
+
 async function modifyFavs(authToken, fav) {
-    const username = auth.getUserByToken(authToken).data
-    const user = await User.findOne({username});
-    if (user.favorites.includes(fav)) { user.favorites = user.favorites.filter((favorite) => favorite !== fav) }
-    else { user.favorites.push(fav) }
-    await user.save()
-    return user.toJSON()
+    const username = auth.getUserByToken(authToken)?.data
+
+    if (isUserNameValid(username)) {
+        let usernameS = username.toLowerCase().trim()
+        const user = await User.findOne({usernameS});
+        if (user.favorites.includes(fav)) { user.favorites = user.favorites.filter((favorite) => favorite !== fav) }
+        else { user.favorites.push(fav) }
+        await user.save()
+        return user.toJSON()
+    }
 }
 
 async function getFavs(authToken) {
-    const username = auth.getUserByToken(authToken).data
-    const user = await User.findOne({username});
-    return user.favorites
+    const username = auth.getUserByToken(authToken)?.data
+
+    if (isUserNameValid(username)) {
+        let usernameS = username.toLowerCase().trim()
+        const user = await User.findOne({usernameS});
+        return user.favorites
+    }
 }
 
 async function hasFavorite(authToken, id) {
     const username = auth.getUserByToken(authToken)?.data
-    const user = await User.findOne({username});
-    return user.favorites.includes(id)
+    if (isUserNameValid(username)) {
+        let usernameS = username.toLowerCase().trim()
+        const user = await User.findOne({usernameS});
+        return user.favorites.includes(id)
+    }
 }
 
 module.exports = {
