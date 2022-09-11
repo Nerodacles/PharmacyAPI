@@ -1,11 +1,11 @@
 const { json } = require('body-parser');
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 const Model = require('../models/model');
 const auth = require('../helpers/jwt');
-var multer = require('multer');
+let multer = require('multer');
 let fs = require('fs-extra');
-var path = require('path');
+let path = require('path');
 let userService = require('../services/userService');
 let drugService = require('../services/drugService');
 
@@ -13,7 +13,7 @@ function generateName(coverName){
     return coverName.trim();
 }
 
-var storage = multer.diskStorage({
+let storage = multer.diskStorage({
     destination: (req, file, cb) => {
         let path = 'uploads';
         fs.mkdirsSync(path);
@@ -21,7 +21,7 @@ var storage = multer.diskStorage({
     filename: (req, file, cb) => {
         cb(null, generateName(file.originalname)) }
 });
-var upload = multer({ storage: storage });
+let upload = multer({ storage: storage });
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -120,8 +120,7 @@ router.post('/post', upload.single('cover'), async (req, res) => {
     if (!token || token !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) } 
     else {
         if (req.body.tags) {
-            splitTags = req.body.tags.split(',');
-            req.body.tags = splitTags;
+            splitTags = (req.body.tags.split(',') || '').map(tag => tag.trim().toLowerCase())
         }
         const drugs = new Model({
             name: req.body.name,
@@ -130,9 +129,8 @@ router.post('/post', upload.single('cover'), async (req, res) => {
             price: req.body.price,
         })
         try {
-            const dataToSave = await drugs.save();
-            await drugService.modifyTags(drugs.id, req.body.tags);
-            res.status(200).json(dataToSave)
+            await drugs.save();
+            res.status(200).json(await drugService.modifyTags(drugs.id, splitTags));
         }
         catch (error) {res.status(400).json({message: error.message})}
     }
@@ -372,8 +370,8 @@ router.patch('/update/:id', async (req, res) => {
             const id = req.params.id;
             const updatedData = req.body;
             const options = { new: true };
-            const result = await Model.findByIdAndUpdate( id, updatedData, options )
-            res.end(`The drug with id ${id} has been updated`)
+            await Model.findByIdAndUpdate( id, updatedData, options )
+            res.end(`The drug has been updated!`)
         }
         catch (error) { res.status(400).json({ message: error.message }) }
     }
@@ -419,10 +417,9 @@ router.delete('/delete/:id', async (req, res) => {
     if (!token || token !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) } 
     else {
         try {
-            const id = req.params.id;
-            console.log(req.params.id)
-            const data = await Model.findByIdAndDelete(id)
-            res.end(`The drug with id ${id} has been deleted`)
+            const id = req.params.id
+            await Model.findByIdAndDelete(id)
+            res.end(`The drug has been deleted!`)
         }
         catch (error) { res.status(400).json({ message: error.message }) }
     }

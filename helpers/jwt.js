@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 
-// get password vars from .env file
+// get password lets from .env file
 dotenv.config();
 
 function authenticateToken(req, res, next) {
@@ -21,7 +21,7 @@ function authenticateToken(req, res, next) {
 function verifyToken(token) {
     try {
         // if token is older than 1h, return false and delete token
-        jwt.verify(token, process.env.TOKEN_SECRET, {maxAge: '1h'})
+        jwt.verify(token, process.env.TOKEN_SECRET, {maxAge: '5d'})
         return true
     } catch (err) {
         return false
@@ -29,11 +29,11 @@ function verifyToken(token) {
 }
 
 function getUserByToken(token) {
-    return jwt.decode(token)
+    return jwt.verify(token, process.env.TOKEN_SECRET, {maxAge: '5d'})
 }
 
 function generateAccessToken(username) {
-    return jwt.sign({data: username}, process.env.TOKEN_SECRET, { expiresIn: '1h' });
+    return jwt.sign({data: username}, process.env.TOKEN_SECRET, { expiresIn: '7d' });
 }
 
 module.exports = {

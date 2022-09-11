@@ -1,33 +1,33 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var express = require('express');
+let createError = require('http-errors');
+let express = require('express');
+let path = require('path');
+let cookieParser = require('cookie-parser');
+let logger = require('morgan');
 const helmet = require("helmet");
-var database = require('./db/conn');
+let database = require('./db/conn');
 const bodyParser= require('body-parser')
 const rateLimit = require("express-rate-limit");
 
-var swaggerJsDoc = require('swagger-jsdoc');
-var swaggerUi = require('swagger-ui-express');
-var {unless} = require('express-unless');
+let swaggerJsDoc = require('swagger-jsdoc');
+let swaggerUi = require('swagger-ui-express');
+let { unless } = require('express-unless');
 
 // Controllers
-var users = require('./controllers/userController.js');
-var favs = require('./controllers/favController.js');
-var tokens = require('./controllers/tokenController.js');
-var tags = require('./controllers/tagsController.js');
+let users = require('./controllers/userController.js');
+let favs = require('./controllers/favController.js');
+let tokens = require('./controllers/tokenController.js');
+let tags = require('./controllers/tagsController.js');
+let search = require('./controllers/searchController.js');
 
 // Helpers
 const auth = require('./helpers/jwt.js');
 const errors = require('./helpers/errorHandlers.js');
 
 // Routers
-var indexRouter = require('./routes/index');
-var apiRouter = require('./routes/api');
-var healthRouter = require('./routes/health');
-var uploadsRouter = require('./routes/uploads');
+let indexRouter = require('./routes/index');
+let apiRouter = require('./routes/api');
+let healthRouter = require('./routes/health');
+let uploadsRouter = require('./routes/uploads');
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -64,6 +64,7 @@ const swaggerOptions = {
           {url: 'https://pharmacy.jmcv.codes/favs', description: 'Favs'},
           {url: 'https://pharmacy.jmcv.codes/tokens', description: 'Tokens'},
           {url: 'https://pharmacy.jmcv.codes/tags', description: 'Tags'},
+          {url: 'https://pharmacy.jmcv.codes/search', description: 'Search'},
           {url: 'https://pharmacy.jmcv.codes/health', description: 'HealthCkeck'},
         ],
       }
@@ -72,17 +73,21 @@ const swaggerOptions = {
       `${__dirname}/routes/api.js`,
       `${__dirname}/controllers/userController.js`,
       `${__dirname}/controllers/favController.js`,
+      `${__dirname}/controllers/searchController.js`,
       `${__dirname}/controllers/tokenController.js`,
       `${__dirname}/controllers/tagsController.js`,
       `${__dirname}/routes/health.js`,
-    ],
+    ]
 }
 
-var swaggerDocs = swaggerJsDoc(swaggerOptions);
+const testOptions = {
+  customSiteTitle: 'API Documentation',
+  customCssUrl: "/stylesheets/SwaggerDark.css"
+}
 
-var app = express();
-app.use(helmet());
-app.disable('x-powered-by');
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+
+let app = express().disable('x-powered-by').use(helmet());
 
 const PORT = process.env.PORT || 8087;
 
@@ -103,7 +108,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname + '/public'));
 
 app.use('/', indexRouter);
 app.use('/users', users);
@@ -111,10 +116,11 @@ app.use('/token', tokens);
 app.use('/favs', favs);
 app.use('/api', limiter);
 app.use('/api', apiRouter);
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, testOptions));
 app.use('/health', healthRouter);
 app.use('/uploads', uploadsRouter);
 app.use('/tags', tags);
+app.use('/search', search);
 
 // middleware for authenticating token submitted with requests
 auth.authenticateToken.unless = unless;

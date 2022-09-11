@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var path = require('path');
+let express = require('express');
+let router = express.Router();
+let path = require('path');
 const rateLimit = require('express-rate-limit');
 
 const limiter = rateLimit({
@@ -13,7 +13,8 @@ let absolutePath = path.resolve(__dirname, '../uploads')
 router.use(limiter)
 
 router.get('/:filename', function(req, res, next) {
-    res.sendFile(absolutePath + decodeURI(req.url))
+    let file = path.normalize(req.url)
+    res.sendFile(absolutePath + decodeURI(file))
 });
 
 module.exports = router;

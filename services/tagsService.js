@@ -1,4 +1,3 @@
-const Model = require('../models/model.js')
 const tagsModel = require('../models/tagsModel.js')
 
 async function modifyTagsDB(tag) {
