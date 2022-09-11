@@ -120,7 +120,7 @@ router.post('/post', upload.single('cover'), async (req, res) => {
     if (!token || token !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) } 
     else {
         if (req.body.tags) {
-            let splitTags = (req.body.tags.split(',') || '').map(tag => tag.trim().toLowerCase())
+            splitTags = (req.body.tags.split(',') || '').map(tag => tag.trim().toLowerCase())
         }
         const drugs = new Model({
             name: req.body.name,
