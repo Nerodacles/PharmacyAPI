@@ -11,13 +11,14 @@ const rateLimit = require("express-rate-limit");
 
 var swaggerJsDoc = require('swagger-jsdoc');
 var swaggerUi = require('swagger-ui-express');
-var {unless} = require('express-unless');
+var { unless } = require('express-unless');
 
 // Controllers
 var users = require('./controllers/userController.js');
 var favs = require('./controllers/favController.js');
 var tokens = require('./controllers/tokenController.js');
 var tags = require('./controllers/tagsController.js');
+var search = require('./controllers/searchController.js');
 
 // Helpers
 const auth = require('./helpers/jwt.js');
@@ -64,6 +65,7 @@ const swaggerOptions = {
           {url: 'https://pharmacy.jmcv.codes/favs', description: 'Favs'},
           {url: 'https://pharmacy.jmcv.codes/tokens', description: 'Tokens'},
           {url: 'https://pharmacy.jmcv.codes/tags', description: 'Tags'},
+          {url: 'https://pharmacy.jmcv.codes/search', description: 'Search'},
           {url: 'https://pharmacy.jmcv.codes/health', description: 'HealthCkeck'},
         ],
       }
@@ -72,13 +74,19 @@ const swaggerOptions = {
       `${__dirname}/routes/api.js`,
       `${__dirname}/controllers/userController.js`,
       `${__dirname}/controllers/favController.js`,
+      `${__dirname}/controllers/searchController.js`,
       `${__dirname}/controllers/tokenController.js`,
       `${__dirname}/controllers/tagsController.js`,
       `${__dirname}/routes/health.js`,
-    ],
+    ]
 }
 
-var swaggerDocs = swaggerJsDoc(swaggerOptions);
+const testOptions = {
+  customSiteTitle: 'API Documentation',
+  customCssUrl: "/stylesheets/SwaggerDark.css"
+}
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 var app = express();
 app.use(helmet());
@@ -103,7 +111,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname + '/public'));
 
 app.use('/', indexRouter);
 app.use('/users', users);
@@ -111,10 +119,11 @@ app.use('/token', tokens);
 app.use('/favs', favs);
 app.use('/api', limiter);
 app.use('/api', apiRouter);
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, testOptions));
 app.use('/health', healthRouter);
 app.use('/uploads', uploadsRouter);
 app.use('/tags', tags);
+app.use('/search', search);
 
 // middleware for authenticating token submitted with requests
 auth.authenticateToken.unless = unless;
