@@ -7,8 +7,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Bump version and push tag
+      - name: Calculate version
         id: tag_version
         uses: miguelfito/github-bump-and-tag-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch
+          create_annotated_tag: false
+          tag_prefix: v
+          dry_run: false
