@@ -1,7 +1,5 @@
 name: Docker Compose Actions Workflow
-on:
-  release:
-    types: [published]
+on: release
 
 jobs:
   DockerCompose:
