@@ -1,13 +1,55 @@
 name: Publish Docker image
-
-on:
-  release:
-    types: [published]
+on: workflow_dispatch
 
 jobs:
+  releaseJob:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch to calculate changelog
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Calculate version
+        id: tag_version
+        uses: miguelfito/github-bump-and-tag-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch
+          create_annotated_tag: true
+          tag_prefix: v
+          dry_run: true
+
+      - name: Get updated commit SHA
+        run: |
+          echo "##[set-output name=commit_id;]$(git rev-parse HEAD)"
+        id: updated_sha
+
+      - name: Bump version and push tag
+        uses: miguelfito/github-bump-and-tag-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_sha: ${{ steps.updated_sha.outputs.commit_id }}
+          default_bump: patch
+          create_annotated_tag: true
+          tag_prefix: v
+
+      - uses: fregante/release-with-changelog@v3
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-template: '- {date}: {title} ← {hash}'
+          template: |
+              ### Changelog
+              {commits}
+              Compare: {range}
+              ❤
+              
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
+    needs: releaseJob
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
