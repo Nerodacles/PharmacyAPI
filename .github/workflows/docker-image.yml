@@ -4,11 +4,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout main branch to calculate changelog
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Calculate version
         id: tag_version
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get updated commit SHA
+        run: |
+          echo "##[set-output name=commit_id;]$(git rev-parse HEAD)"
+        id: updated_sha
+
+      - name: Test
+        run: print( ${{steps.tag_version.outputs.new_tag}} )
+        
+      - name: Test
+        run: print( ${{steps.tag_version.outputs}} )
+        
+      - name: Calculate version
+        id: tag_version2
         uses: mathieudutour/github-tag-action@v6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
