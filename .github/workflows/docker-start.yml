@@ -1,30 +1,9 @@
 name: Docker Compose Actions Workflow
-
 on:
   release:
     types: [published]
 
 jobs:
-  Release:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 50
-    - uses: fregante/release-with-changelog@v3
-      with:
-        token: ${{ secrets.TOKEN_SECRET }}
-        exclude: '^Meta'
-        commit-template: '- {title} ← {hash}'
-        template: |
-          ### Changelog
-
-          {commits}
-
-          {range}
-
-          ❤
-
   DockerCompose:
     runs-on: self-hosted
     steps:
@@ -43,17 +22,22 @@ jobs:
           echo "TOKEN_SECRET=${{ secrets.TOKEN_SECRET }}" >> .env
           echo "API_KEY=${{ secrets.API_KEY }}" >> .env
       - name: Build the stack
-        run: docker-compose up -d --force-recreate
-#      - name: "Sleep for 2 min"
-#        uses: jakejarvis/wait-action@master
-#        with:
-#          time: '2m'
-#      - name: "Test API"
-#        uses: indiesdev/curl@v1.1
-#        with:
-#          url: "https://pharmacy.jmcv.codes/health"
-#          method: "GET"
-#          accept: 200,201,204
-#          timeout: 20000
-#          log-response: true
-#          retries: 20
+        run: docker-compose pull && docker-compose up -d --force-recreate
+        
+  TestEndpoint:
+    runs-on: ubuntu-latest
+    needs: DockerCompose
+    steps:
+      - name: "Sleep for 2 min"
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '2m'
+      - name: "Test API"
+        uses: indiesdev/curl@v1.1
+        with:
+          url: "https://pharmacy.jmcv.codes/health"
+          method: "GET"
+          accept: 200,201,204
+          timeout: 2000
+          log-response: true
+          retries: 20
