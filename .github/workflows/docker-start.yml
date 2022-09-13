@@ -1,8 +1,30 @@
 name: Docker Compose Actions Workflow
+
 on:
   release:
     types: [published]
+
 jobs:
+  Release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 50
+    - uses: fregante/release-with-changelog@v3
+      with:
+        token: ${{ secrets.TOKEN_SECRET }}
+        exclude: '^Meta'
+        commit-template: '- {title} ← {hash}'
+        template: |
+          ### Changelog
+
+          {commits}
+
+          {range}
+
+          ❤
+
   DockerCompose:
     runs-on: self-hosted
     steps:
