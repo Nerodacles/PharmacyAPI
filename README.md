@@ -9,7 +9,7 @@
 [![forks - PharmacyApi](https://img.shields.io/github/forks/Nerodacles/PharmacyApi?style=social)](https://github.com/Nerodacles/PharmacyApi)
 
 [![Docker Compose Actions Workflow](https://github.com/Nerodacles/PharmacyApi/workflows/Docker%20Compose%20Actions%20Workflow/badge.svg)](https://github.com/Nerodacles/PharmacyApi/actions?query=workflow:"Docker+Compose+Actions+Workflow")
-[![GitHub tag](https://img.shields.io/github/tag/Nerodacles/PharmacyApi?include_prereleases=&sort=semver&color=blue)](https://github.com/Nerodacles/PharmacyApi/releases/)
+[![GitHub tag](https://img.shields.io/github/tag/Nerodacles/PharmacyApi?include_prereleases=&sort=semver&color=blue)](https://github.com/Nerodacles/PharmacyApi/releases/latest)
 [![License](https://img.shields.io/badge/License-MIT-blue)](#license)
 [![issues - PharmacyApi](https://img.shields.io/github/issues/Nerodacles/PharmacyApi)](https://github.com/Nerodacles/PharmacyApi/issues)
 
