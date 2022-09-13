@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router();
 const tagsService = require('../services/tagsService.js')
+const drugService = require('../services/drugService.js')
 
 /**
 * @swagger
@@ -41,6 +42,15 @@ router.get('/', (req, res, next) => {
     tagsService.getTags()
         .then(tags => res.json(tags))
         .catch(err => next(err))
+})
+
+router.patch('/:id', (req, res, next) => {
+    if (!req.headers['api-key'] || req.headers['api-key'] !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) }
+    else {
+        drugService.modifyTags(req.params.id, req.body.tags)
+            .then(() => res.json({message: 'tags updated'}))
+            .catch(err => res.status(400).json({error: err.message}))
+    }
 })
 
 module.exports = router;
