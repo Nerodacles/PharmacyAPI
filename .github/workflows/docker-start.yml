@@ -1,7 +1,10 @@
 name: Docker Compose Actions Workflow
 on:
-  release:
-    types: [published]
+  workflow_run:
+    workflows: [Publish Docker image]
+    types:
+      - completed
+
 jobs:
   DockerCompose:
     runs-on: self-hosted
@@ -21,17 +24,18 @@ jobs:
           echo "TOKEN_SECRET=${{ secrets.TOKEN_SECRET }}" >> .env
           echo "API_KEY=${{ secrets.API_KEY }}" >> .env
       - name: Build the stack
-        run: docker-compose up -d --force-recreate
-#      - name: "Sleep for 2 min"
-#        uses: jakejarvis/wait-action@master
-#        with:
-#          time: '2m'
-#      - name: "Test API"
-#        uses: indiesdev/curl@v1.1
-#        with:
-#          url: "https://pharmacy.jmcv.codes/health"
-#          method: "GET"
-#          accept: 200,201,204
-#          timeout: 20000
-#          log-response: true
-#          retries: 20
+        run: docker-compose pull && docker-compose up -d --force-recreate
+        
+  TestEndpoint:
+    runs-on: ubuntu-latest
+    needs: DockerCompose
+    steps:
+      - name: "Test API"
+        uses: indiesdev/curl@v1.1
+        with:
+          url: "https://pharmacy.jmcv.codes/health"
+          method: "GET"
+          accept: 200,201,204
+          timeout: 2000
+          log-response: true
+          retries: 20
