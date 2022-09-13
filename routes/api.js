@@ -292,6 +292,15 @@ router.get('/getOne/:id', async (req, res) => {
 *     summary: Update a Drug
 *     description: Update a drug
 *     parameters:
+*       - in: path
+*         name: id
+*         description: Drug id
+*         required:
+*           - id
+*         properties:
+*           id:
+*             type: string
+*             description: Id of the drug
 *       - name: name
 *         in: formData
 *         description: Name of the drug
