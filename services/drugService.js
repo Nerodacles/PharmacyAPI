@@ -12,6 +12,7 @@ async function modifyTags(drugID, tags) {
         else{ drug.tags.splice(drug.tags.indexOf(tags[i]), 1) }
     }
     await drug.save();
+    console.log(drug)
     return drug.toJSON()
 }
 

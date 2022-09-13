@@ -116,13 +116,9 @@ router.get('/', function(req, res, next) {
 
 //Post Method
 router.post('/post', upload.single('cover'), async (req, res) => {
-    const token = req.headers['api-key']; 
-
-    if (!token || token !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) } 
+    if (!req.headers['api-key'] || req.headers['api-key'] !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) } 
     else {
-        if (req.body.tags) {
-            splitTags = (req.body.tags.split(',') || '').map(tag => tag.trim().toLowerCase())
-        }
+        if (req.body.tags) { splitTags = (req.body.tags.split(',') || '').map(tag => tag.trim().toLowerCase()) }
         const drugs = new Model({
             name: req.body.name,
             description: req.body.description,
@@ -133,7 +129,7 @@ router.post('/post', upload.single('cover'), async (req, res) => {
             await drugs.save();
             res.status(200).json(await drugService.modifyTags(drugs.id, splitTags));
         }
-        catch (error) {res.status(400).json({message: error.message})}
+        catch (error) { res.status(400).json({message: error.message}) }
     }
 })
 
@@ -271,12 +267,10 @@ router.get('/getOne/:id', async (req, res) => {
     try{
         const data = await Model.findById(req.params.id);
         if(data === null){ res.status(500).json({message: data}) }
-        if ( await userService.hasFavorite(req.headers.authorization, req.params.id)) {
-            res.json({ data, favorite: true })
+        if ( req.headers['authorization'] ) {
+            return await userService.hasFavorite(req.headers.authorization, req.params.id) ? res.json({data, favorite: true}) : res.json({data, favorite: false})
         }
-        else {
-            res.json({ data, favorite: false })
-        }
+        res.json({ data, favorite: false })
     }
     catch(error){ res.status(500).json({message: error.message}) }
 })
@@ -297,10 +291,6 @@ router.get('/getOne/:id', async (req, res) => {
 *         description: Drug id
 *         required:
 *           - id
-*         properties:
-*           id:
-*             type: string
-*             description: Id of the drug
 *       - name: name
 *         in: formData
 *         description: Name of the drug
@@ -371,10 +361,7 @@ router.get('/getOne/:id', async (req, res) => {
 
 //Update by ID Method
 router.patch('/update/:id', async (req, res) => {
-    const token = req.headers['api-key'];
-    if (!token || token !== process.env.API_KEY) {
-        res.status(401).json({error: 'unauthorised'})
-    }   
+    if (!req.headers['api-key'] || req.headers['api-key'] !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) }   
     else {
         try {
             const id = req.params.id;
@@ -382,6 +369,18 @@ router.patch('/update/:id', async (req, res) => {
             const options = { new: true };
             await Model.findByIdAndUpdate( id, updatedData, options )
             res.end(`The drug has been updated!`)
+        }
+        catch (error) { res.status(400).json({ message: error.message }) }
+    }
+})
+
+router.patch('/updateTags/:id', async (req, res) => {
+    const token = req.headers['api-key'];
+    if (!token || token !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) }
+    else {
+        try {
+            drugService.modifyTags(req.params.id, req.body.tags)
+            res.end(`The tags have been updated!`)
         }
         catch (error) { res.status(400).json({ message: error.message }) }
     }
@@ -423,8 +422,7 @@ router.patch('/update/:id', async (req, res) => {
 
 //Delete by ID Method
 router.delete('/delete/:id', async (req, res) => {
-    const token = req.headers['api-key'];
-    if (!token || token !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) } 
+    if (!req.headers['api-key'] || req.headers['api-key'] !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) } 
     else {
         try {
             const id = req.params.id
