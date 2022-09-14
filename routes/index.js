@@ -12,7 +12,7 @@ router.use(limiter)
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express with docker' });
+  res.render('index', { title: 'Express - PharmacyAPI' });
 });
 
 module.exports = router;

@@ -59,6 +59,8 @@ const searchService = require('../services/searchService.js')
 *         description: Bad request
 *       401:
 *         description: Token expired
+*       500:
+*         description: Internal server error
 */
 
 router.post('/', (req, res, next) => {
@@ -80,13 +82,14 @@ router.post('/', (req, res, next) => {
 *       - application/json
 *     parameters:
 *       - name: tags
-*         in: formData
-*         description: Tags of the drug
+*         in: body
+*         schema:
+*           type: array
+*           items:
+*             type: string
+*           example: ["dolor de cabeza", "dolor de estomago"]
 *         required: true
-*         type: array
-*         items:
-*           type: string
-*         default: ["dolor de cabeza", "dolor de estomago"]
+*         description: Tags of the drug
 *     responses:
 *       200:
 *         description: Drugs returned
@@ -126,12 +129,21 @@ router.post('/', (req, res, next) => {
 *         description: Bad request
 *       401:
 *         description: Token expired
+*       500:
+*         description: Internal server error
 */
 
 router.post('/tags', (req, res, next) => {
-    searchService.searchDrugsByTag(req.body.tags)
+    if (req.body?.tags){
+        searchService.searchDrugsByTag(req.body.tags)
         .then(drugs => res.json(drugs))
         .catch(err => next(err))
+    }
+    else{
+        searchService.searchDrugsByTag(req.body)
+        .then(drugs => res.json(drugs))
+        .catch(err => next(err))
+    }
 })
 
 module.exports = router;
