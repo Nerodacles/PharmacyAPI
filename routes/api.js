@@ -191,13 +191,8 @@ router.post('/post', upload.single('cover'), async (req, res) => {
 //Get all Method
 router.get('/getAll', async (req, res) => {
     try{
-        // if ( req.headers['api-key'] === process.env.API_KEY || auth.verifyToken(req.headers.authorization) ) {
             const data = await Model.find();
             res.json(data)
-        // }
-        // else {
-            // res.status(401).json({error: 'unauthorised'})
-        // }
     }
     catch(error){ res.status(500).json({message: error.message}) }
 })
