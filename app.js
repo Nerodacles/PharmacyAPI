@@ -18,6 +18,7 @@ let favs = require('./controllers/favController.js');
 let tokens = require('./controllers/tokenController.js');
 let tags = require('./controllers/tagsController.js');
 let search = require('./controllers/searchController.js');
+let orders = require('./controllers/ordersController.js');
 
 // Helpers
 const auth = require('./helpers/jwt.js');
@@ -65,6 +66,7 @@ const swaggerOptions = {
           {url: 'https://pharmacy.jmcv.codes/tokens', description: 'Tokens'},
           {url: 'https://pharmacy.jmcv.codes/tags', description: 'Tags'},
           {url: 'https://pharmacy.jmcv.codes/search', description: 'Search'},
+          {url: 'https://pharmacy.jmcv.codes/orders', description: 'Orders'},
           {url: 'https://pharmacy.jmcv.codes/health', description: 'HealthCkeck'},
         ],
       }
@@ -76,6 +78,7 @@ const swaggerOptions = {
       `${__dirname}/controllers/searchController.js`,
       `${__dirname}/controllers/tokenController.js`,
       `${__dirname}/controllers/tagsController.js`,
+      `${__dirname}/controllers/ordersController.js`,
       `${__dirname}/routes/health.js`,
     ]
 }
@@ -89,7 +92,7 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 let app = express().disable('x-powered-by').use(helmet());
 
-const PORT = process.env.PORT || 8087;
+const PORT = 8087;
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -120,6 +123,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, testOptions));
 app.use('/health', healthRouter);
 app.use('/uploads', uploadsRouter);
 app.use('/tags', tags);
+app.use('/orders', orders);
 app.use('/search', search);
 
 // middleware for authenticating token submitted with requests

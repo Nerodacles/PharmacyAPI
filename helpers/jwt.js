@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
+const userModel = require('../models/userModel')
 
 // get password lets from .env file
 dotenv.config();
@@ -31,9 +32,18 @@ function generateAccessToken(username) {
     return jwt.sign({data: username}, process.env.TOKEN_SECRET, { expiresIn: '7d' });
 }
 
+function getUserRole(token) {
+    let tokenData = jwt.verify(token, process.env.TOKEN_SECRET, {maxAge: '5d'})
+    if (tokenData) {
+        let user = userModel.findOne({username: tokenData.data})
+        return user
+    }
+}
+
 module.exports = {
     generateAccessToken,
     authenticateToken,
     verifyToken,
-    getUserByToken
+    getUserByToken,
+    getUserRole,
 }

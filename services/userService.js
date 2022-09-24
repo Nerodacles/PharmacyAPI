@@ -73,6 +73,25 @@ async function hasFavorite(authToken, id) {
     }
 }
 
+async function checkUserIsAdmin(token){
+    if (!token){
+        return false
+    }
+    let user = await auth.getUserRole(token)
+    if (user.role === 'admin') {
+        return true
+    }
+    return false
+}
+
+async function getUserID(token) {
+    let user = await auth.getUserByToken(token)
+    if (user) {
+        let userData = await User.findOne({username: user.data})
+        return userData._id.toString()
+    }
+}
+
 module.exports = {
     login,
     register,
@@ -81,4 +100,6 @@ module.exports = {
     modifyFavs,
     hasFavorite,
     getFavs,
+    checkUserIsAdmin,
+    getUserID
 };
