@@ -92,6 +92,11 @@ async function getUserID(token) {
     }
 }
 
+async function getUserName(id) {
+    let userData = await User.findById(id)
+    return userData.username
+}
+
 module.exports = {
     login,
     register,
@@ -101,5 +106,6 @@ module.exports = {
     hasFavorite,
     getFavs,
     checkUserIsAdmin,
-    getUserID
+    getUserID,
+    getUserName
 };

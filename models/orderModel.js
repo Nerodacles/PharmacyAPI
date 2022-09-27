@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const userModel = require('../models/userModel');
 
 const drugs = new mongoose.Schema({
     id: {

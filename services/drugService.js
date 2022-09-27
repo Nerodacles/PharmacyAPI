@@ -15,6 +15,13 @@ async function modifyTags(drugID, tags) {
     return drug.toJSON()
 }
 
+async function getCoverImage(id) {
+    const drug = await Model.findById(id);
+    if (!drug) { throw 'Drug not found'; }
+    return drug.cover;
+}
+
 module.exports = {
     modifyTags,
+    getCoverImage,
 };
