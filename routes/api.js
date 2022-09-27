@@ -116,7 +116,9 @@ router.get('/', function(req, res, next) {
 
 //Post Method
 router.post('/post', upload.single('cover'), async (req, res) => {
-    if (!req.headers['api-key'] || req.headers['api-key'] !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) } 
+    let token = req.headers.authorization
+    let user = await userServices.checkUserIsAdmin(token)
+    if (!user) { res.status(401).json({error: 'unauthorised'}) } 
     else {
         if (req.body.tags) { splitTags = (req.body.tags.split(',') || '').map(tag => tag.trim().toLowerCase()) }
         const drugs = new Model({
@@ -356,7 +358,9 @@ router.get('/getOne/:id', async (req, res) => {
 
 //Update by ID Method
 router.patch('/update/:id', async (req, res) => {
-    if (!req.headers['api-key'] || req.headers['api-key'] !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) }   
+    let token = req.headers.authorization
+    let user = await userServices.checkUserIsAdmin(token)
+    if (!user) { res.status(401).json({error: 'unauthorised'}) }   
     else {
         try {
             const id = req.params.id;
@@ -405,7 +409,9 @@ router.patch('/update/:id', async (req, res) => {
 
 //Delete by ID Method
 router.delete('/delete/:id', async (req, res) => {
-    if (!req.headers['api-key'] || req.headers['api-key'] !== process.env.API_KEY) { res.status(401).json({error: 'unauthorised'}) } 
+    let token = req.headers.authorization
+    let user = await userServices.checkUserIsAdmin(token)
+    if (!user) { res.status(401).json({error: 'unauthorised'}) } 
     else {
         try {
             const id = req.params.id

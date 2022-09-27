@@ -7,6 +7,7 @@ const helmet = require("helmet");
 let database = require('./db/conn');
 const bodyParser= require('body-parser')
 const rateLimit = require("express-rate-limit");
+let cors = require('cors');
 
 let swaggerJsDoc = require('swagger-jsdoc');
 let swaggerUi = require('swagger-ui-express');
@@ -90,7 +91,13 @@ const testOptions = {
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
+const corsOptions = {
+  origin: 'https://*.jmcv.codes',
+  optionsSuccessStatus: 200
+}
+
 let app = express().disable('x-powered-by').use(helmet());
+app.use(cors(corsOptions));
 
 const PORT = 8087;
 
@@ -143,10 +150,6 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set headers 
-  res.header('Access-Control-Allow-Origin', 'https://*.jmcv.codes');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, authorization, API-Key');
-
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

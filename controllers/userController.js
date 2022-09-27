@@ -183,8 +183,9 @@ router.post('/login', (req, res, next) => {
 *         description: Unauthorized
 */
 
-router.get('/All', (req, res, next) => {
-    if (req.headers['api-key'] === process.env.API_KEY) {
+router.get('/All', async (req, res, next) => {
+    let token = req.headers.authorization
+    if (await userServices.checkUserIsAdmin(token)) {
         userServices.getAll()
         .then(users => { res.json(users) } )
         .catch(err => next(err))
