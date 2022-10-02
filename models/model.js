@@ -26,7 +26,8 @@ const drugSchema = new mongoose.Schema({
     createdTime: {
         type: Date,
         default: Date.now
-    }
+    },
+    status: { type: Boolean, default: true },
 })
 
 drugSchema.set('toJSON', {

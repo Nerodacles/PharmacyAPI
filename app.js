@@ -92,8 +92,9 @@ const testOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 const corsOptions = {
-  origin: 'https://*.jmcv.codes',
-  optionsSuccessStatus: 200
+  origin: 'https://pharmacyadmin.jmcv.codes',
+  optionsSuccessStatus: 200,
+  crossOriginResourcePolicy: false
 }
 
 let app = express().disable('x-powered-by').use(helmet());

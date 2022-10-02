@@ -28,6 +28,7 @@ const UserSchema = new Schema({
         type: Array,
         default: []
     },
+    status: { type: Boolean, default: true },
 });
 
 UserSchema.set('toJSON', {
