@@ -1,4 +1,4 @@
-FROM node:16.17.0-bullseye-slim as base
+FROM node:16.17-bullseye-slim as base
 
 ENV PATH=${PATH}
 
