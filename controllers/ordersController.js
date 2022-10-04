@@ -78,7 +78,7 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
     let token = await req.headers['authorization'];
     if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
-    if ( await userService.checkUserIsAdmin(token) === true || await orderService.checkIfUserIsOwner(token, req.params.id) === true) {
+    if ( await userService.checkUserIsAdmin(token) || await orderService.checkIfUserIsOwner(token, req.params.id) === true) {
         orderService.getOrder(req.params.id)
         .then((order) => {res.status(200).json(order);})
         .catch((err) => { res.status(500).json(err); });
