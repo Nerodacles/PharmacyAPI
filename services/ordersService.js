@@ -9,7 +9,9 @@ async function createOrder(order) {
     let drugIndex, totalPrice=0;
     for (drugIndex in order.drugs) {
         let drugID = order.drugs[drugIndex].id;
-        const drug = await drugModel.findById(drugID);
+        let query = { id: drugID.toString().trim().toLowerCase()};
+
+        const drug = await drugModel.findById(query.id);
         if (!drug?.status) { throw new Error('Drug not found'); }
         order.drugs[drugIndex].name = drug.name;
         order.totalPrice = drug.price * order.drugs[drugIndex].quantity;
@@ -51,7 +53,10 @@ async function getOrdersByUser(username) {
 }
 
 async function updateStatus(id, status) {
-    const order = await orderModel.findByIdAndUpdate(id, { status: status }, { new: true });
+    // validate if status is voolean
+    let query = { status: status.toString().trim().toLowerCase()};
+
+    const order = await orderModel.findByIdAndUpdate(id, query, { new: true });
     if (!order) { throw new Error('Order not found'); }
     return order.toJSON();
 }

@@ -360,15 +360,23 @@ router.get('/getOne/:id', async (req, res) => {
 //Update by ID Method
 router.patch('/update/:id', async (req, res) => {
     let token = req.headers.authorization
-    let user = await userServices.checkUserIsAdmin(token)
-    if (!user) { res.status(401).json({error: 'unauthorised'}) }   
+    if (await !userService.checkUserIsAdmin(token)) { res.status(401).json({error: 'unauthorised'}) }   
     else {
         try {
-            const id = req.params.id;
-            const updatedData = req.body;
-            const options = { new: true };
-            await Model.findByIdAndUpdate( id, updatedData, options )
-            res.end(`The drug has been updated!`)
+            let queryDrug = { _id: req.params.id.trim().toString() }
+            let queryInput = {}
+
+            const data = await Model.findById(queryDrug);
+            if(data === null){ res.status(500).json({message: data}) }
+            
+            if (req.body.name) { queryInput = { ...queryInput, name: req.body.name.trim().toString() } }
+            if (req.body.description) { queryInput = { ...queryInput, description: req.body.description.trim().toString() } }
+            if (req.body.price) { queryInput = { ...queryInput, price: req.body.price.trim().toString() } }
+            if (req.body.tags) { queryInput = { ...queryInput, tags: req.body.tags } }
+            if (req.files) { queryInput = { ...queryInput, cover: await uploadFile(req.files.cover) } }
+
+            await Model.findOneAndUpdate(queryDrug, queryInput, {new: true});
+            res.json({message: 'Drug updated'})
         }
         catch (error) { res.status(400).json({ message: error.message }) }
     }
@@ -411,7 +419,7 @@ router.patch('/update/:id', async (req, res) => {
 //Delete by ID Method
 router.delete('/delete/:id', async (req, res) => {
     let token = req.headers.authorization
-    let user = await userServices.checkUserIsAdmin(token)
+    let user = await userService.checkUserIsAdmin(token)
     if (!user) { res.status(401).json({error: 'unauthorised'}) } 
     else {
         try {
