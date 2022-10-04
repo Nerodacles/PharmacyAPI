@@ -116,15 +116,16 @@ router.get('/', function(req, res, next) {
 
 //Post Method
 router.post('/post', upload.single('cover'), async (req, res) => {
+    let splitTags = [];
     let token = req.headers.authorization
-    let user = await userServices.checkUserIsAdmin(token)
+    let user = await userService.checkUserIsAdmin(token)
     if (!user) { res.status(401).json({error: 'unauthorised'}) } 
     else {
         if (req.body.tags) { splitTags = (req.body.tags.split(',') || '').map(tag => tag.trim().toLowerCase()) }
         const drugs = new Model({
             name: req.body.name,
             description: req.body.description,
-            cover: path.join('pharmacy.jmcv.codes/uploads/' + req.file.filename.trim()),
+            // cover: path.join('pharmacy.jmcv.codes/uploads/' + req.file.filename.trim()),
             price: req.body.price,
         })
         try {
@@ -193,8 +194,8 @@ router.post('/post', upload.single('cover'), async (req, res) => {
 //Get all Method
 router.get('/getAll', async (req, res) => {
     try{
-            const data = await Model.find();
-            res.json(data)
+        const data = await Model.find();
+        res.json(data)
     }
     catch(error){ res.status(500).json({message: error.message}) }
 })

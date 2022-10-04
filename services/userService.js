@@ -3,10 +3,11 @@ const bcrypt = require('bcryptjs');
 const auth = require('../helpers/jwt.js')
 
 async function login({ username, password }) {
-    const user = await User.findOne({username});
+    let query = { username: username.toLowerCase().trim().toString() }
+    const user = await User.findOne(query);
 
     // synchronously compare user entered password with hashed password
-    if(bcrypt.compareSync(password, user.password)){
+    if(bcrypt.compareSync(password.trim().toString(), user.password)){
         // Generate a token
         const token = auth.generateAccessToken(username);
 
@@ -17,10 +18,38 @@ async function login({ username, password }) {
 }
 
 async function register(params){
-    // instantiate a user modal and save to mongoDB
-    const user = new User(params);
+    let username = params.username.toLowerCase().trim().toString()
+    let password = params.password.trim().toString()
+    let email = params.email.trim().toString()
+
+    let query = { username: username.toLowerCase().trim().toString(), email: email.trim().toString() }
+
+    if (email.indexOf('@') == -1) {
+        throw new Error('Email is not valid');
+    }
+
+    if (await User.findOne({ email: query.email })) {
+        throw new Error("Email is already taken");
+    }
+
+    // not construct database query with user input
+    if (await User.findOne({ username: query.username })) {
+        throw new Error("Username is already taken");
+    }
+
+    // delete invalid characters from username
+    username = username.replace(/[^a-z0-9_\.]/g, '');
+    email = email.replace(/[^a-z0-9_\.@]/g, '');
+    username = username.replace('.', '');
+    
+
+    const user = new User({
+        username: username,
+        password: password,
+        email: email,
+    })
     await user.save();
-    // call toJSON method applied during model instantiation
+
     return user.toJSON();
 }
 
@@ -78,10 +107,7 @@ async function checkUserIsAdmin(token){
         return false
     }
     let user = await auth.getUserRole(token)
-    if (user.role === 'admin') {
-        return true
-    }
-    return false
+    return user.role == 'admin'
 }
 
 async function getUserID(token) {

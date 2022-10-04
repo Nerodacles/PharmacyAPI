@@ -51,8 +51,9 @@ router.post('/register', (req, res, next) => {
     const salt = bcrypt.genSaltSync(10);
     req.body.password = bcrypt.hashSync(password, salt);
 
-    userServices.register(req.body).then( () => res.sendStatus(200) )
-    .catch( err => next(err) )
+    userServices.register(req.body)
+    .then((user) => { res.status(200).json(user) })
+    .catch((err) => { res.status(500).json(`${err}`) })
 })
 
 /**
@@ -111,7 +112,7 @@ router.post('/register', (req, res, next) => {
 *             email: test@test.com
 *             role: user
 *             date: 2020-01-01T00:00:00.000Z
-*             token: eypXVCJ9.eyJkYXRhIjoi1MzAyOSwiZXhwIjoxNjU3MDU2NjI5fQ.c5iagr0FX1cgoSFuyBLnaxSdyePGH_w
+*             token: eypXVCJ9.eIjoiIjoxNjU3MDU2NjI5fQ.c5iagFuyBPGH_w
 *       400:
 *         description: Bad request
 *       401:
@@ -121,11 +122,11 @@ router.post('/register', (req, res, next) => {
 */
 
 router.post('/login', (req, res, next) => {
-    const { username, password } = req.body;
+    const username = req.body.username;
+    const password = req.body.password;
     userServices.login({ username, password })
         .then(user => {
             if (user == 'err'){ res.sendStatus(400) }
-            res.setHeader('authorization', user.token)
             res.json(user)
         }
     ).catch(err => next(res.sendStatus(400)))

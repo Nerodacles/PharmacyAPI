@@ -6,11 +6,12 @@ async function searchDrugsByTag(tags) {
     const drugs = await Model.find({ tags: { $in: tags } });
     let drugsArray = new Array();
 
-    if (!drugs) { throw 'Drugs not found'; }
-    if (drugs.length > 2) {
-        for (let i = 0; i < drugs.length; i++) {
-            if (JSON.stringify(drugs[i].tags.sort())==JSON.stringify(tags.sort())){
-                drugsArray.push(drugs[i].toJSON())
+    if (!drugs) { throw new Error('Drugs not found'); }
+    if (tags.length >= 2) {
+        let drug = "";
+        for (drug of drugs) {
+            if (tags.every(tag => drug.tags.includes(tag))) {
+                drugsArray.push(drug);
             }
         }
         return drugsArray;
@@ -21,7 +22,7 @@ async function searchDrugsByTag(tags) {
 async function searchDrugsByName(name) {
     name = name.toLowerCase()
     const drugs = await Model.find({ name: { $regex: name, $options: 'i' } });
-    if (!drugs) { throw 'Drugs not found'; }
+    if (!drugs) { throw new Error('Drugs not found'); }
     return drugs.map(drug => drug.toJSON())
 }
 
