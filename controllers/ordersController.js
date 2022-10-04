@@ -37,7 +37,7 @@ const auth = require('../helpers/jwt.js')
 router.get('/', async (req, res, next) => {
     let token = await req.headers['authorization'];
     if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
-    if ( await userService.checkUserIsAdmin(token) === false) { return res.status(401).json({ message: 'Unauthorized' }); }
+    if ( await !userService.checkUserIsAdmin(token)) { return res.status(401).json({ message: 'Unauthorized' }); }
     else {
         orderService.getOrders()
         .then((orders) => {res.status(200).json(orders);})
@@ -78,7 +78,7 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
     let token = await req.headers['authorization'];
     if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
-    if ( await userService.checkUserIsAdmin(token) || await orderService.checkIfUserIsOwner(token, req.params.id) === true) {
+    if ( await userService.checkUserIsAdmin(token) || await orderService.checkIfUserIsOwner(token, req.params.id) ) {
         orderService.getOrder(req.params.id)
         .then((order) => {res.status(200).json(order);})
         .catch((err) => { res.status(500).json(err); });
@@ -202,7 +202,7 @@ router.post('/', async (req, res, next) => {
 router.patch('/status/:id', (req, res, next) => {
     let token = req.headers['authorization'];
     if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
-    if (userService.checkUserIsAdmin(token) === true) {
+    if (userService.checkUserIsAdmin(token)) {
         orderService.updateStatus(req.params.id, req.body.status)
         .then((order) => { res.status(200).json(order); })
         .catch((err) => { res.status(500).json(err); });
