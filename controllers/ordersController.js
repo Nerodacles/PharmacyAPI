@@ -35,7 +35,7 @@ const auth = require('../helpers/jwt.js')
 */
 
 router.get('/', async (req, res, next) => {
-    let token = await req.headers.authorization;
+    let token = req.headers.authorization;
     if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
     if ( await !userService.checkUserIsAdmin(token)) { return res.status(401).json({ message: 'Unauthorized' }); }
     else {
@@ -76,20 +76,15 @@ router.get('/', async (req, res, next) => {
 *         description: Unauthorized
 */
 
-router.get('/user', async (req, res, next) => {
+router.get('/user/:id', async (req, res, next) => {
     let token = req.headers.authorization;
-    if (token) {
-        let user = await userService.getUserID(token);
-        if (user) {
-            orderService.getOrdersByUser(user)
-            .then((orders) => { res.status(200).json(orders); })
-            .catch((err) => { res.status(500).json(err); });
-        } else {
-            res.status(401).json({ message: 'Unauthorized' });
-        }
-    } else {
-        res.status(401).json({ message: 'Not a valid token!' });
-    }
+    if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
+    if ( await !userService.checkUserIsAdmin(token)) { return res.status(401).json({ message: 'Unauthorized' }); }
+
+    let query = { user: req.params.id.toString().trim() };
+    orderService.getOrdersByUser(req.params.id)
+    .then((orders) => {res.status(200).json(orders);})
+    .catch((err) => { res.status(500).json(err); });
 })
 
 /**
