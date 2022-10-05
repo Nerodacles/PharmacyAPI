@@ -47,8 +47,19 @@ async function getOrder(id) {
 }
 
 async function getOrdersByUser(userID) {
-    const orders = await orderModel.find({ user: userID });
+    let orderIndex, drugIndex = 0;
+    const orders = await orderModel.find({user: userID});
     if (!orders) { throw new Error('Orders not found'); }
+    for (orderIndex in orders) {
+        let newOrder = orders[orderIndex].toJSON();
+        newOrder.user = await userService.getUserName(newOrder.user);
+        orders[orderIndex] = newOrder;
+        for (drugIndex in orders[orderIndex].drugs) {
+            let newDrug = orders[orderIndex].drugs[drugIndex];
+            newDrug.cover = await drugService.getCoverImage(newDrug.id.toString());
+            orders[orderIndex].drugs[drugIndex] = newDrug;
+        }
+    }
     return orders;
 }
 
