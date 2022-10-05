@@ -79,9 +79,9 @@ router.get('/', async (req, res, next) => {
 router.get('/user', async (req, res, next) => {
     let token = req.headers.authorization;
     if (token) {
-        let user = await auth.getUserByToken(token);
-        if (user.data) {
-            orderService.getOrdersByUser(user.data)
+        let user = await userService.getUserID(token);
+        if (user) {
+            orderService.getOrdersByUser(user)
             .then((orders) => { res.status(200).json(orders); })
             .catch((err) => { res.status(500).json(err); });
         } else {

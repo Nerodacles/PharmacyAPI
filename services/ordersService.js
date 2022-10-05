@@ -46,8 +46,8 @@ async function getOrder(id) {
     return order.toJSON();
 }
 
-async function getOrdersByUser(username) {
-    const orders = await orderModel.find({ username });
+async function getOrdersByUser(userID) {
+    const orders = await orderModel.find({ user: userID });
     if (!orders) { throw new Error('Orders not found'); }
     return orders;
 }
