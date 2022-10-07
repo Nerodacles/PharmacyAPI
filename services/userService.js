@@ -1,10 +1,10 @@
-const User = require('../models/userModel')
+const userModel = require('../models/userModel')
 const bcrypt = require('bcryptjs');
 const auth = require('../helpers/jwt.js')
 
 async function login({ username, password }) {
     let query = { username: username.toLowerCase().trim().toString() }
-    const user = await User.findOne(query);
+    const user = await userModel.findOne(query);
 
     // synchronously compare user entered password with hashed password
     if(bcrypt.compareSync(password.trim().toString(), user.password)){
@@ -28,12 +28,12 @@ async function register(params){
         throw new Error('Email is not valid');
     }
 
-    if (await User.findOne({ email: query.email })) {
+    if (await userModel.findOne({ email: query.email })) {
         throw new Error("Email is already taken");
     }
 
     // not construct database query with user input
-    if (await User.findOne({ username: query.username })) {
+    if (await userModel.findOne({ username: query.username })) {
         throw new Error("Username is already taken");
     }
 
@@ -43,7 +43,7 @@ async function register(params){
     username = username.replace('.', '');
     
 
-    const user = new User({
+    const user = new userModel({
         username: username,
         password: password,
         email: email,
@@ -55,11 +55,11 @@ async function register(params){
 
 async function getAll() {
     // find all users in mongoDB
-    return User.find({})
+    return userModel.find({})
 }
 
 async function getById(id) {
-    const user = await User.findById(id);
+    const user = await userModel.findById(id);
     // call toJSON method applied during model instantiation
     return user.toJSON()
 }
@@ -75,7 +75,7 @@ async function modifyFavs(authToken, fav) {
 
     if (isUserNameValid(username)) {
         let usernameS = username.toLowerCase().trim()
-        const user = await User.findOne({usernameS});
+        const user = await userModel.findOne({usernameS});
         if (user.favorites.includes(fav)) { user.favorites = user.favorites.filter((favorite) => favorite !== fav) }
         else { user.favorites.push(fav) }
         await user.save()
@@ -88,7 +88,7 @@ async function getFavs(authToken) {
 
     if (isUserNameValid(username)) {
         let usernameS = username.toLowerCase().trim()
-        const user = await User.findOne({usernameS});
+        const user = await userModel.findOne({usernameS});
         return user.favorites
     }
 }
@@ -97,7 +97,7 @@ async function hasFavorite(authToken, id) {
     const username = auth.getUserByToken(authToken)?.data
     if (isUserNameValid(username)) {
         let usernameS = username.toLowerCase().trim()
-        const user = await User.findOne({usernameS});
+        const user = await userModel.findOne({usernameS});
         return user.favorites.includes(id)
     }
 }
@@ -113,14 +113,22 @@ async function checkUserIsAdmin(token){
 async function getUserID(token) {
     let user = await auth.getUserByToken(token)
     if (user) {
-        let userData = await User.findOne({username: user.data})
+        let userData = await userModel.findOne({username: user.data})
         return userData._id.toString()
     }
 }
 
 async function getUserName(id) {
-    let userData = await User.findById(id)
+    let userData = await userModel.findById(id)
     return userData.username
+}
+
+async function updateStatus(id, status) {
+    // validate if status is voolean
+    let query = { _id: id.toString().trim() , status: status.toString().toLowerCase()};
+    const order = await userModel.findByIdAndUpdate(query._id, {status: query.status}, { new: true });
+    if (!order) { throw new Error('Order not found'); }
+    return order.toJSON();
 }
 
 module.exports = {
@@ -133,5 +141,6 @@ module.exports = {
     getFavs,
     checkUserIsAdmin,
     getUserID,
-    getUserName
+    getUserName,
+    updateStatus
 };

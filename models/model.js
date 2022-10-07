@@ -1,32 +1,13 @@
 const mongoose = require('mongoose');
-const { Schema } = mongoose;
 
 const drugSchema = new mongoose.Schema({
-    name: {
-        required: true,
-        type: String,
-    },
-    description: {
-        required: true,
-        type: String,
-    },
-    price: {
-        required: true,
-        type: Number,
-        default: 200,
-    },
-    cover: {
-        type: String,
-        required: false
-    },
-    tags: {
-        type: Array,
-        required: true,
-    },
-    createdTime: {
-        type: Date,
-        default: Date.now
-    },
+    name: { required: true, type: String },
+    description: { required: true, type: String },
+    price: { required: true, type: Number, default: 200 },
+    stock: { required: true, type: Number, default: 50 },
+    cover: { type: String, required: false },
+    tags: { type: Array, required: true },
+    createdTime: { type: Date, default: Date.now },
     status: { type: Boolean, default: true },
 })
 

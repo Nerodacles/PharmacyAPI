@@ -22,7 +22,28 @@ async function getCoverImage(id) {
     return drug.cover;
 }
 
+async function updateDrug(id, drug) {
+    let queryDrug = { _id: id.trim().toString() }
+    let queryInput = {}
+    const data = await Model.findById(queryDrug);
+    
+    
+    if(data === null || !data){ res.status(500).json({message: data}) }
+    
+    if (drug.name) { queryInput = { ...queryInput, name: drug.name.trim().toString() } }
+    if (drug.description) { queryInput = { ...queryInput, description: drug.description.trim().toString() } }
+    if (drug.price) { queryInput = { ...queryInput, price: drug.price.trim().toString() } }
+    if (drug.tags) { queryInput = { ...queryInput, tags: drug.tags } }
+    if (drug?.status == drug?.status) { queryInput = { ...queryInput, status: drug.status } }
+    if (drug.stock) { queryInput = { ...queryInput, stock: drug.stock.trim().toString() } }
+
+    const updatedDrug = await Model.findOneAndUpdate(queryDrug, queryInput, { new: true });
+    if (!updatedDrug) { throw new Error('Drug not found'); }
+    return updatedDrug.toJSON();
+}
+
 module.exports = {
     modifyTags,
     getCoverImage,
+    updateDrug,
 };

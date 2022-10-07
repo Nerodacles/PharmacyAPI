@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router();
 const bcrypt = require('bcryptjs')
-const userServices = require('../services/userService')
+const userService = require('../services/userService')
 
 /**
 * @swagger
@@ -51,7 +51,7 @@ router.post('/register', (req, res, next) => {
     const salt = bcrypt.genSaltSync(10);
     req.body.password = bcrypt.hashSync(password, salt);
 
-    userServices.register(req.body)
+    userService.register(req.body)
     .then((user) => { res.status(200).json(user) })
     .catch((err) => { res.status(500).json(`${err}`) })
 })
@@ -124,7 +124,7 @@ router.post('/register', (req, res, next) => {
 router.post('/login', (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
-    userServices.login({ username, password })
+    userService.login({ username, password })
         .then(user => {
             if (user == 'err'){ res.sendStatus(400) }
             res.json(user)
@@ -186,8 +186,8 @@ router.post('/login', (req, res, next) => {
 
 router.get('/All', async (req, res, next) => {
     let token = req.headers.authorization
-    if (await userServices.checkUserIsAdmin(token)) {
-        userServices.getAll()
+    if (await userService.checkUserIsAdmin(token)) {
+        userService.getAll()
         .then(users => { res.json(users) } )
         .catch(err => next(err))
     }
@@ -245,9 +245,21 @@ router.get('/All', async (req, res, next) => {
 */
 
 router.get('/:id', (req, res, next) => {
-    userServices.getById(req.params.id)
+    userService.getById(req.params.id)
     .then( (user) => res.json(user))
     .catch(err => next(err))
+})
+
+router.patch('/:id', (req, res, next) => {
+    let token = req.headers.authorization;
+    if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
+    if (userService.checkUserIsAdmin(token)) {
+        userService.updateStatus(req.params.id, req.body.status)
+        .then((order) => { res.status(200).json(order); })
+        .catch((err) => { res.status(500).json(err); });
+    } else {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
 })
 
 module.exports = router;

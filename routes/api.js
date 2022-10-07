@@ -125,6 +125,7 @@ router.post('/post', upload.single('cover'), async (req, res) => {
         const drugs = new Model({
             name: req.body.name,
             description: req.body.description,
+            stock: req.body.stock,
             // cover: path.join('pharmacy.jmcv.codes/uploads/' + req.file.filename.trim()),
             price: req.body.price,
         })
@@ -362,23 +363,9 @@ router.patch('/update/:id', async (req, res) => {
     let token = req.headers.authorization
     if (await !userService.checkUserIsAdmin(token)) { res.status(401).json({error: 'unauthorised'}) }   
     else {
-        try {
-            let queryDrug = { _id: req.params.id.trim().toString() }
-            let queryInput = {}
-
-            const data = await Model.findById(queryDrug);
-            if(data === null){ res.status(500).json({message: data}) }
-            
-            if (req.body.name) { queryInput = { ...queryInput, name: req.body.name.trim().toString() } }
-            if (req.body.description) { queryInput = { ...queryInput, description: req.body.description.trim().toString() } }
-            if (req.body.price) { queryInput = { ...queryInput, price: req.body.price.trim().toString() } }
-            if (req.body.tags) { queryInput = { ...queryInput, tags: req.body.tags } }
-            if (req.files) { queryInput = { ...queryInput, cover: await uploadFile(req.files.cover) } }
-
-            await Model.findOneAndUpdate(queryDrug, queryInput, {new: true});
-            res.json({message: 'Drug updated'})
-        }
-        catch (error) { res.status(400).json({ message: error.message }) }
+        await drugService.updateDrug(req.params.id, req.body)
+        .then(data => res.json({message: 'Drug updated'}))
+        .catch(error => res.status(500).json({message: error.message}))
     }
 })
 
