@@ -45,10 +45,9 @@ router.get('/', async (req, res, next) => {
     }
 })
 
-
 /**
 * @swagger
-* /orders/user:
+* /orders/user/{id}:
 *   get:
 *     tags:
 *       - Orders
@@ -83,6 +82,46 @@ router.get('/user/:id', async (req, res, next) => {
 
     let query = { user: req.params.id.toString().trim() };
     orderService.getOrdersByUser(req.params.id)
+    .then((orders) => {res.status(200).json(orders);})
+    .catch((err) => { res.status(500).json(err); });
+})
+
+/**
+* @swagger
+* /orders/product/{id}:
+*   get:
+*     tags:
+*       - Orders
+*     security:
+*       - ApiKeyAuth: []
+*     summary: Get User Orders
+*     description: Get User Orders
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Orders
+*         schema:
+*           type: Array
+*           properties:
+*             id:
+*               type: string
+*               description: Id of the order
+*           example:
+*             - "123456789"
+*             
+*       400:
+*         description: Bad request
+*       401:
+*         description: Unauthorized
+*/
+
+router.get('/product/:id', async (req, res, next) => {
+    let token = req.headers.authorization;
+    if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
+    if ( await !userService.checkUserIsAdmin(token)) { return res.status(401).json({ message: 'Unauthorized' }); }
+
+    orderService.getOrderByProductID(req.params.id)
     .then((orders) => {res.status(200).json(orders);})
     .catch((err) => { res.status(500).json(err); });
 })

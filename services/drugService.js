@@ -1,5 +1,6 @@
 const Model = require('../models/model.js')
 const tagsService = require('../services/tagsService.js')
+let path = require('path');
 
 async function modifyTags(drugID, tags) {
     let tag = "";
@@ -22,11 +23,10 @@ async function getCoverImage(id) {
     return drug.cover;
 }
 
-async function updateDrug(id, drug) {
+async function updateDrug(id, drug, image) {
     let queryDrug = { _id: id.trim().toString() }
     let queryInput = {}
     const data = await Model.findById(queryDrug);
-    
     
     if(data === null || !data){ res.status(500).json({message: data}) }
     
@@ -36,6 +36,7 @@ async function updateDrug(id, drug) {
     if (drug.tags) { queryInput = { ...queryInput, tags: drug.tags } }
     if (drug?.status == drug?.status) { queryInput = { ...queryInput, status: drug.status } }
     if (drug.stock) { queryInput = { ...queryInput, stock: drug.stock.trim().toString() } }
+    if ( image ) { queryInput = { ...queryInput, cover: path.join('pharmacy.jmcv.codes/uploads/' + image.filename.trim()) } }
 
     const updatedDrug = await Model.findOneAndUpdate(queryDrug, queryInput, { new: true });
     if (!updatedDrug) { throw new Error('Drug not found'); }

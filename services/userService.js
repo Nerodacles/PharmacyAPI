@@ -131,6 +131,18 @@ async function updateStatus(id, status) {
     return order.toJSON();
 }
 
+async function changePassword(id, oldPassword, newPassword) {
+    let query = { _id: id.toString().trim() };
+    const user = await userModel.findById(query._id);
+    if (!user) { throw new Error('User not found'); }
+    if(bcrypt.compareSync(oldPassword.trim().toString(), user.password)){
+        user.password = newPassword
+        await user.save()
+        return user.toJSON();
+    }
+    return 'err'
+}
+
 module.exports = {
     login,
     register,
@@ -142,5 +154,6 @@ module.exports = {
     checkUserIsAdmin,
     getUserID,
     getUserName,
-    updateStatus
+    updateStatus,
+    changePassword
 };

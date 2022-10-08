@@ -262,4 +262,70 @@ router.patch('/:id', (req, res, next) => {
     }
 })
 
+/**
+* @swagger
+* /users/changePassword:
+*   get:
+*     tags:
+*       - Users
+*     security: []
+*     summary: Change password
+*     description: Change password
+*     produces:
+*       - application/json
+*     parameters:
+*       - in: body
+*         name: oldPassword
+*         description: Old password
+*         required:
+*           - oldPassword
+*         properties:
+*           oldPassword:
+*             type: string
+*       - in: body
+*         name: newPassword
+*         description: New password
+*         required:
+*           - newPassword
+*         properties:
+*           newPassword:
+*             type: string
+*     responses:
+*       200:
+*         description: User found
+*         schema:
+*           type: object
+*           properties:
+*             id:
+*               type: string
+*             role:
+*               type: string
+*             username:
+*               type: string
+*             email:
+*               type: string
+*             date:
+*               type: string
+*           example:
+*             id: 62ae1de392d3f0b8a6
+*             username: test
+*             email: test@test.com
+*             role: user
+*             date: 2020-01-01T00:00:00.000Z
+*       400:
+*         description: Bad request
+*       401:
+*         description: Unauthorized
+*       500:
+*         description: User is not found
+*/
+
+router.patch('/changePassword', (req, res, next) => {
+    let token = req.headers.authorization;
+    if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
+    userService.changePassword(token, req.body.oldPassword, req.body.newPassword)
+    .then((user) => { res.status(200).json(user); })
+    .catch((err) => { res.status(500).json(err); });
+})
+
 module.exports = router;

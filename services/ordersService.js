@@ -63,6 +63,44 @@ async function getOrdersByUser(userID) {
     return orders;
 }
 
+async function getOrderByProductID(id) {
+    let query = { "_id": id.toString().trim().toLowerCase()};
+    let orderIndex, drugIndex = 0;
+    let orderFinale = [];
+    
+    const orders = await orderModel.find({});
+    if (!orders) { throw new Error('Orders not found'); }
+
+    // filter orders by product id
+    for (orderIndex in orders) {
+        let newOrder = orders[orderIndex].toJSON();
+        newOrder.user = await userService.getUserName(newOrder.user);
+        orders[orderIndex] = newOrder;
+
+        // delete the drug from the order if it is not the one we are looking for and update the totalPrice
+        if (orders[orderIndex].drugs.length > 1) {
+            let drug = await drugModel.findById(query);
+            for (drugIndex in orders[orderIndex].drugs) {
+                let newDrug = orders[orderIndex].drugs[drugIndex];
+                newDrug.cover = await drugService.getCoverImage(newDrug.id.toString());
+                if (newDrug.id.toString() == drug.id.toString()) {
+                    orders[orderIndex].totalPrice = drug.price * newDrug.quantity;
+                    orderFinale = [newDrug];
+                }
+            }
+            orders[orderIndex].drugs = orderFinale
+        }
+
+        // delete the order if it does not contain the drug we are looking for
+        for (drugIndex in orders[orderIndex].drugs) {
+            let newDrug = orders[orderIndex].drugs[drugIndex];
+            newDrug.cover = await drugService.getCoverImage(newDrug.id.toString());
+            orders[orderIndex].drugs[drugIndex] = newDrug;
+        }
+    }
+    return orders.filter(order => order.drugs.some(drug => drug.id == id));
+}
+
 async function updateStatus(id, status) {
     // validate if status is voolean
     let query = { status: status.toString().trim().toLowerCase()};
@@ -84,5 +122,6 @@ module.exports = {
     getOrder,
     updateStatus,
     getOrdersByUser,
-    checkIfUserIsOwner
+    checkIfUserIsOwner,
+    getOrderByProductID
 };

@@ -31,6 +31,9 @@ let apiRouter = require('./routes/api');
 let healthRouter = require('./routes/health');
 let uploadsRouter = require('./routes/uploads');
 
+// Service
+let userService = require('./services/userService.js');
+
 const swaggerOptions = {
   swaggerDefinition: {
     openai: '1.0.0',
@@ -103,10 +106,20 @@ app.use(cors(corsOptions));
 const PORT = 8087;
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 50 requests per windowMs
-  keyGenerator: (req, res) => req.header('x-real-ip')
+  windowMs: 60 * 60 * 1000, // 1h
+  max: async (req, response) => {
+    if (await userService.checkUserIsAdmin(req.headers.authorization)) return 0
+		else return 100
+	},
+  keyGenerator: (req, res) => req.header('x-real-ip'),
+  message: async (req, response) => {
+		if (await userService.checkUserIsAdmin(req.headers.authorization)) return 'You can make infinite requests every hour.'
+		else return 'You can only make 100 requests every hour.'
+	},
+  store: new rateLimit.MemoryStore(),
 });
+
+app.get('/ip', (request, response) => response.send(request.ip))
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

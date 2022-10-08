@@ -22,6 +22,7 @@ let storage = multer.diskStorage({
     filename: (req, file, cb) => {
         cb(null, generateName(file.originalname)) }
 });
+
 let upload = multer({ storage: storage, limits: {fileSize: 1000000} });
 
 /* GET home page. */
@@ -118,15 +119,14 @@ router.get('/', function(req, res, next) {
 router.post('/post', upload.single('cover'), async (req, res) => {
     let splitTags = [];
     let token = req.headers.authorization
-    let user = await userService.checkUserIsAdmin(token)
-    if (!user) { res.status(401).json({error: 'unauthorised'}) } 
+    if (await !userService.checkUserIsAdmin(token)) { res.status(401).json({error: 'unauthorised'}) } 
     else {
         if (req.body.tags) { splitTags = (req.body.tags.split(',') || '').map(tag => tag.trim().toLowerCase()) }
         const drugs = new Model({
             name: req.body.name,
             description: req.body.description,
             stock: req.body.stock,
-            // cover: path.join('pharmacy.jmcv.codes/uploads/' + req.file.filename.trim()),
+            cover: path.join('pharmacy.jmcv.codes/uploads/' + req.file.filename.trim()),
             price: req.body.price,
         })
         try {
@@ -359,11 +359,11 @@ router.get('/getOne/:id', async (req, res) => {
 */
 
 //Update by ID Method
-router.patch('/update/:id', async (req, res) => {
+router.patch('/update/:id', upload.single('cover'), async (req, res) => {
     let token = req.headers.authorization
     if (await !userService.checkUserIsAdmin(token)) { res.status(401).json({error: 'unauthorised'}) }   
     else {
-        await drugService.updateDrug(req.params.id, req.body)
+        await drugService.updateDrug(req.params.id, req.body, req.file)
         .then(data => res.json({message: 'Drug updated'}))
         .catch(error => res.status(500).json({message: error.message}))
     }
