@@ -115,11 +115,11 @@ const limiter = rateLimit({
   message: async (req, response) => {
 		if (await userService.checkUserIsAdmin(req.headers.authorization)) return 'You can make infinite requests every hour.'
 		else return 'You can only make 100 requests every hour.'
-	},
-  store: new rateLimit.MemoryStore(),
+	}
 });
 
-app.get('/ip', (request, response) => response.send(request.ip))
+app.use(limiter)
+app.set('trust proxy', 3)
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -138,7 +138,6 @@ app.use('/', indexRouter);
 app.use('/users', users);
 app.use('/token', tokens);
 app.use('/favs', favs);
-app.use('/api', limiter);
 app.use('/api', apiRouter);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, testOptions));
 app.use('/health', healthRouter);

@@ -14,6 +14,7 @@ const orderSchema = new mongoose.Schema({
     delivered: { type: Boolean, default: false },
     createdTime: { type: Date, default: Date.now },
     status: { type: Boolean, default: true },
+    location: { type: Array, default: [] },
 })
 
 orderSchema.set('toJSON', {

@@ -198,6 +198,20 @@ router.get('/:id', async (req, res, next) => {
 *             quantity:
 *               type: number
 *               description: Quantity of the drug
+*       - name: location
+*         description: Location
+*         in: body
+*         required: true
+*         type: array
+*         items:
+*           type: object
+*           properties:
+*             lat:
+*               type: number
+*               description: Latitude
+*             lng:
+*               type: number
+*               description: Longitude
 *     responses:
 *       200:
 *         description: Orders
@@ -223,6 +237,7 @@ router.post('/', async (req, res, next) => {
         let userID = await userService.getUserID(token);
         orderService.createOrder({
             drugs: req.body.drugs,
+            location: req.body.location,
             user: userID
         })
         .then((order) => { res.status(200).json(order); })

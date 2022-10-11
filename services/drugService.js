@@ -13,6 +13,7 @@ async function modifyTags(drugID, tags) {
         }
         else{ drug.tags.splice(drug.tags.indexOf(tag), 1) }
     }
+    console.log(drug.tags)
     await drug.save();
     return drug.toJSON()
 }
@@ -26,6 +27,7 @@ async function getCoverImage(id) {
 async function updateDrug(id, drug, image) {
     let queryDrug = { _id: id.trim().toString() }
     let queryInput = {}
+    let tags = drug?.tags.split(',')
     const data = await Model.findById(queryDrug);
     
     if(data === null || !data){ res.status(500).json({message: data}) }
@@ -33,7 +35,7 @@ async function updateDrug(id, drug, image) {
     if (drug.name) { queryInput = { ...queryInput, name: drug.name.trim().toString() } }
     if (drug.description) { queryInput = { ...queryInput, description: drug.description.trim().toString() } }
     if (drug.price) { queryInput = { ...queryInput, price: drug.price.trim().toString() } }
-    if (drug.tags) { queryInput = { ...queryInput, tags: drug.tags } }
+    if (drug.tags) { queryInput = { ...queryInput, tags: tags } }
     if (drug?.status == drug?.status) { queryInput = { ...queryInput, status: drug.status } }
     if (drug.stock) { queryInput = { ...queryInput, stock: drug.stock.trim().toString() } }
     if ( image ) { queryInput = { ...queryInput, cover: path.join('pharmacy.jmcv.codes/uploads/' + image.filename.trim()) } }

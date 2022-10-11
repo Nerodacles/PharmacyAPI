@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
     date: { type: Date, default: Date.now() },
     favorites: { type: Array, default: [] },
     status: { type: Boolean, default: true },
+    location: { type: Array, default: [] },
 });
 
 UserSchema.set('toJSON', {

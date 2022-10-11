@@ -1,7 +1,6 @@
 require('dotenv').config();
 
 const mongoose = require('mongoose');
-const mongoString = process.env.DATABASE_URL;
 
 mongoose.connect(process.env.URL, {
     "authSource": "admin",
