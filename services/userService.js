@@ -110,6 +110,14 @@ async function checkUserIsAdmin(token){
     return user.role == 'admin'
 }
 
+async function checkUserIsDelivery(token){
+    if (!token){
+        return false
+    }
+    let user = await auth.getUserRole(token)
+    return user.role == 'delivery'
+}
+
 async function getUserID(token) {
     let user = await auth.getUserByToken(token)
     if (user) {
@@ -152,6 +160,7 @@ module.exports = {
     hasFavorite,
     getFavs,
     checkUserIsAdmin,
+    checkUserIsDelivery,
     getUserID,
     getUserName,
     updateStatus,
