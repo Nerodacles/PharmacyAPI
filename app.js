@@ -119,7 +119,7 @@ const limiter = rateLimit({
 });
 
 app.use(limiter)
-app.set('trust proxy', 3)
+// app.set('trust proxy', 3)
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
