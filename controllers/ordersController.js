@@ -41,7 +41,7 @@ router.get('/', async (req, res, next) => {
     else {
         orderService.getOrders()
         .then((orders) => {res.status(200).json(orders);})
-        .catch((err) => { res.status(500).json(err); });
+        .catch((err) => { res.status(500).json(`${err}`); });
     }
 })
 
@@ -83,7 +83,7 @@ router.get('/user/:id', async (req, res, next) => {
     let query = { user: req.params.id.toString().trim() };
     orderService.getOrdersByUser(req.params.id)
     .then((orders) => {res.status(200).json(orders);})
-    .catch((err) => { res.status(500).json(err); });
+    .catch((err) => { res.status(500).json(`${err}`); });
 })
 
 /**
@@ -123,7 +123,7 @@ router.get('/product/:id', async (req, res, next) => {
 
     orderService.getOrderByProductID(req.params.id)
     .then((orders) => {res.status(200).json(orders);})
-    .catch((err) => { res.status(500).json(err); });
+    .catch((err) => { res.status(500).json(`${err}`); });
 })
 
 /**
@@ -162,7 +162,7 @@ router.get('/:id', async (req, res, next) => {
     if ( await !userService.checkUserIsAdmin(token) || await !userService.checkUserIsDelivery(token) || await orderService.checkIfUserIsOwner(token, req.params.id) ) {
         orderService.getOrder(req.params.id)
         .then((order) => {res.status(200).json(order);})
-        .catch((err) => { res.status(500).json(err); });
+        .catch((err) => { res.status(500).json(`${err}`); });
     }
     else {
         return res.status(401).json({ message: 'Unauthorized' });
@@ -240,8 +240,8 @@ router.post('/', async (req, res, next) => {
             location: req.body.location,
             user: userID
         })
-        .then((order) => { res.status(200).json(order); })
-        .catch((err) => { res.status(500).json(err); });
+        .then((order) => { return res.status(200).json(order); })
+        .catch((err) => { return res.status(500).json(`${err}`); });
     } else {
         return res.status(401).json({ message: 'Unauthorized' });
     }
@@ -301,7 +301,107 @@ router.patch('/status/:id', (req, res, next) => {
     if (userService.checkUserIsAdmin(token) || userService.checkUserIsDelivery(token)) {
         orderService.updateStatus(req.params.id, req.body.status)
         .then((order) => { res.status(200).json(order); })
-        .catch((err) => { res.status(500).json(err); });
+        .catch((err) => { res.status(500).json(`${err}`); });
+    } else {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+})
+
+/**
+* @swagger
+* /accept/{id}:
+*   post:
+*     tags:
+*       - Orders
+*     security:
+*       - ApiKeyAuth: [admin, delivery]
+*     summary: Accept Order
+*     description: Accept Order only if the user is admin or delivery
+*     produces:
+*       - application/json
+*     consumes:
+*       multipart/form-data
+*     parameters:
+*       - name: id
+*         description: Order Id
+*         in: path
+*         required: true
+*         type: string
+*     responses:
+*       200:
+*         description: Orders
+*         schema:
+*           type: Array
+*           properties:
+*             id:
+*               type: string
+*               description: Id of the favorite
+*           example:
+*             - "123456789"
+*             
+*       400:
+*         description: Bad request
+*       401:
+*         description: Unauthorized
+*/
+
+router.post('/accept/:id', (req, res, next) => {
+    let token = req.headers.authorization;
+    if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
+    if (userService.checkUserIsAdmin(token) || userService.checkUserIsDelivery(token)) {
+        orderService.acceptOrder(token, req.params.id)
+        .then((order) => { res.status(200).json(order); })
+        .catch((err) => { res.status(500).json(`${err}`); });
+    } else {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+})
+
+/**
+* @swagger
+* /deliver/{id}:
+*   post:
+*     tags:
+*       - Orders
+*     security:
+*       - ApiKeyAuth: [admin, delivery]
+*     summary: Deliver Order
+*     description: Deliver Order only if the user is admin or delivery
+*     produces:
+*       - application/json
+*     consumes:
+*       multipart/form-data
+*     parameters:
+*       - name: id
+*         description: Order Id
+*         in: path
+*         required: true
+*         type: string
+*     responses:
+*       200:
+*         description: Orders
+*         schema:
+*           type: Array
+*           properties:
+*             id:
+*               type: string
+*               description: Id of the favorite
+*           example:
+*             - "123456789"
+*             
+*       400:
+*         description: Bad request
+*       401:
+*         description: Unauthorized
+*/
+
+router.post('/deliver/:id', (req, res, next) => {
+    let token = req.headers.authorization;
+    if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
+    if (userService.checkUserIsAdmin(token) || userService.checkUserIsDelivery(token)) {
+        orderService.deliverOrder(token, req.params.id)
+        .then((order) => { res.status(200).json(order); })
+        .catch((err) => { res.status(500).json(`${err}`); });
     } else {
         return res.status(401).json({ message: 'Unauthorized' });
     }

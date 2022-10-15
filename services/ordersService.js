@@ -6,13 +6,19 @@ const userService = require('../services/userService');
 const drugService = require('../services/drugService.js');
 
 async function createOrder(order) {
-    let drugIndex, totalPrice=0;
+    let drugIndex, totalPrice = 0;
     for (drugIndex in order.drugs) {
         let drugID = order.drugs[drugIndex].id;
         let query = { id: drugID.toString().trim().toLowerCase()};
 
         const drug = await drugModel.findById(query.id);
         if (!drug?.status) { throw new Error('Drug not found'); }
+
+        // update the stock of the drug
+        drugStock = drug.stock - order.drugs[drugIndex].quantity;
+        if (drugStock <= 0) { throw new Error(`No hay suficiente ${drug.name}`) }
+        await drugModel.findByIdAndUpdate(query.id, {stock: drugStock}, { new: true });
+
         order.drugs[drugIndex].name = drug.name;
         order.totalPrice = drug.price * order.drugs[drugIndex].quantity;
         totalPrice += order.totalPrice;
@@ -29,7 +35,7 @@ async function getOrders() {
     if (!orders) { throw new Error('Orders not found'); }
     for (orderIndex in orders) {
         let newOrder = orders[orderIndex].toJSON();
-        newOrder.user = await userService.getUserName(newOrder.user);
+        newOrder.user = await userService.getUserName(newOrder.user.toString());
         orders[orderIndex] = newOrder;
         for (drugIndex in orders[orderIndex].drugs) {
             let newDrug = orders[orderIndex].drugs[drugIndex];
@@ -60,7 +66,7 @@ async function getOrdersByUser(userID) {
             orders[orderIndex].drugs[drugIndex] = newDrug;
         }
     }
-    return orders;
+    return orders.filter(order => order.status == true);
 }
 
 async function getOrderByProductID(id) {
@@ -116,8 +122,48 @@ async function checkIfUserIsOwner(token, id) {
     return user == order?.user.toString()
 }
 
+async function acceptOrder(token, id) {
+    const isDelivery = await userService.checkUserIsDelivery(token);
+    const delivery = await userService.getUserID(token);
+    let query = { _id: id.toString().trim().toLowerCase() };
+
+    if (isDelivery) {
+        const order = await orderModel.findById(query);
+        if (order.status) {
+            order.delivered = 'on the way';
+            order.delivery = delivery
+            const newOrder = await orderModel.findByIdAndUpdate(query, order, { new: true });
+            if (!newOrder) { throw new Error('Order not found'); }
+            return newOrder.toJSON();
+        } else {
+            throw new Error('Order already accepted');
+        }
+    }
+}
+
+async function deliverOrder(token, id) {
+    const isDelivery = await userService.checkUserIsDelivery(token);
+    const isAdmin = await userService.checkUserIsAdmin(token);
+    const delivery = await userService.getUserID(token);
+    let query = { _id: id.toString().trim().toLowerCase() };
+
+    if (isDelivery) {
+        const order = await orderModel.findById(query);
+        if ((order.status && order.delivered == 'on the way' && order.delivery == delivery) || (order.status == true && isAdmin)) {
+            order.delivered = 'yes';
+            const newOrder = await orderModel.findByIdAndUpdate(query, order, { new: true });
+            if (!newOrder) { throw new Error('Order not found'); }
+            return newOrder.toJSON();
+        } else {
+            throw new Error('Order already accepted');
+        }
+    }
+}
+
 module.exports = {
     createOrder,
+    acceptOrder,
+    deliverOrder,
     getOrders,
     getOrder,
     updateStatus,

@@ -11,10 +11,11 @@ const orderSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     drugs: [drugs],
     totalPrice: { type: Number, required: true },
-    delivered: { type: Boolean, default: false },
+    delivered: { type: String, default: 'no' },
+    delivery: { type: String },
     createdTime: { type: Date, default: Date.now },
     status: { type: Boolean, default: true },
-    location: { type: Array, default: [] },
+    location: { type: Object, default: {} },
 })
 
 orderSchema.set('toJSON', {

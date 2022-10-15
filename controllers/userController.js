@@ -126,7 +126,7 @@ router.post('/login', (req, res, next) => {
     const password = req.body.password;
     userService.login({ username, password })
         .then(user => {
-            if (user == 'err'){ res.sendStatus(400) }
+            if (user == 'err'){ return res.sendStatus(400) }
             res.json(user)
         }
     ).catch(err => next(res.sendStatus(400)))
@@ -196,80 +196,6 @@ router.get('/All', async (req, res, next) => {
 
 /**
 * @swagger
-* /users/{id}:
-*   get:
-*     tags:
-*       - Users
-*     security: []
-*     summary: Get a user data
-*     description: Get a user data
-*     produces:
-*       - application/json
-*     parameters:
-*       - in: path
-*         name: id
-*         description: User id
-*         required:
-*           - id
-*         properties:
-*           id:
-*             type: string
-*     responses:
-*       200:
-*         description: User found
-*         schema:
-*           type: object
-*           properties:
-*             id:
-*               type: string
-*             role:
-*               type: string
-*             username:
-*               type: string
-*             email:
-*               type: string
-*             date:
-*               type: string
-*           example:
-*             id: 62ae1de392d3f0b8a6
-*             username: test
-*             email: test@test.com
-*             role: user
-*             date: 2020-01-01T00:00:00.000Z
-*       400:
-*         description: Bad request
-*       401:
-*         description: Unauthorized
-*       500:
-*         description: User is not found
-*/
-
-router.get('/:id', (req, res, next) => {
-    userService.getById(req.params.id)
-    .then( (user) => res.json(user))
-    .catch(err => next(err))
-})
-
-router.patch('/:id', (req, res, next) => {
-    let token = req.headers.authorization;
-    if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
-    if (userService.checkUserIsAdmin(token)) {
-        return userService.updateStatus(req.params.id, req.body.status)
-        .then((order) => { res.status(200).json(order); })
-        .catch((err) => { res.status(500).json(err); });
-    }
-    if (userService.checkUserIsDelivery(token)) {
-        return userService.updateLocation(req.params.id, req.body.location)
-        .then((order) => { res.status(200).json(order); })
-        .catch((err) => { res.status(500).json(err); });
-    }
-    // else {
-    //     return res.status(401).json({ message: 'Unauthorized' });
-    // }
-})
-
-/**
-* @swagger
 * /users/changePassword:
 *   get:
 *     tags:
@@ -333,5 +259,80 @@ router.patch('/changePassword', (req, res, next) => {
     .then((user) => { res.status(200).json(user); })
     .catch((err) => { res.status(500).json(err); });
 })
+
+/**
+* @swagger
+* /users/{id}:
+*   get:
+*     tags:
+*       - Users
+*     security: []
+*     summary: Get a user data
+*     description: Get a user data
+*     produces:
+*       - application/json
+*     parameters:
+*       - in: path
+*         name: id
+*         description: User id
+*         required:
+*           - id
+*         properties:
+*           id:
+*             type: string
+*     responses:
+*       200:
+*         description: User found
+*         schema:
+*           type: object
+*           properties:
+*             id:
+*               type: string
+*             role:
+*               type: string
+*             username:
+*               type: string
+*             email:
+*               type: string
+*             date:
+*               type: string
+*           example:
+*             id: 62ae1de392d3f0b8a6
+*             username: test
+*             email: test@test.com
+*             role: user
+*             date: 2020-01-01T00:00:00.000Z
+*       400:
+*         description: Bad request
+*       401:
+*         description: Unauthorized
+*       500:
+*         description: User is not found
+*/
+
+router.get('/:id', (req, res, next) => {
+    userService.getById(req.params.id)
+    .then( (user) => res.json(user))
+    .catch(err => next(err))
+})
+
+router.patch('/:id', async (req, res, next) => {
+    let token = req.headers.authorization;
+    if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
+    if (await userService.checkUserIsAdmin(token)) {
+        return userService.updateStatus(req.params.id, req.body.status)
+        .then((order) => { res.status(200).json(order); })
+        .catch((err) => { res.status(500).json(err); });
+    }
+    if (await userService.checkUserIsDelivery(token)) {
+        return userService.updateLocation(req.params.id, req.body.location)
+        .then((order) => { res.status(200).json(order); })
+        .catch((err) => { res.status(500).json(err); });
+    }
+    else {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+})
+
 
 module.exports = router;

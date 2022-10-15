@@ -14,7 +14,7 @@ async function searchDrugsByTag(tags) {
         
         return drugsArray;
     }
-    return drugs.map(drug => drug.toJSON())
+    return drugs.map(drug => drug.toJSON()).filter(drug => drug.status == true);
 }
 
 async function searchDrugsByName(name) {
@@ -22,7 +22,7 @@ async function searchDrugsByName(name) {
     const drugs = await Model.find({ name: { $regex: name, $options: 'i' } });
     if (!drugs) { throw new Error('Drugs not found'); }
     if (drugs.length == 0) { throw new Error('Drugs not found'); }
-    return drugs.map(drug => drug.toJSON())
+    return drugs.map(drug => drug.toJSON()).filter(drug => drug.status == true);
 }
 
 module.exports = {

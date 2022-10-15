@@ -195,8 +195,9 @@ router.post('/post', upload.single('cover'), async (req, res) => {
 //Get all Method
 router.get('/getAll', async (req, res) => {
     try{
-        const data = await Model.find();
-        res.json(data)
+        let userAdmin = await userService.checkUserIsAdmin(req.headers.authorization);
+        if (userAdmin) { return res.status(200).json(await Model.find()) }
+        res.json(await Model.find({status: true}))
     }
     catch(error){ res.status(500).json({message: error.message}) }
 })
