@@ -254,12 +254,18 @@ router.patch('/:id', (req, res, next) => {
     let token = req.headers.authorization;
     if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
     if (userService.checkUserIsAdmin(token)) {
-        userService.updateStatus(req.params.id, req.body.status)
+        return userService.updateStatus(req.params.id, req.body.status)
         .then((order) => { res.status(200).json(order); })
         .catch((err) => { res.status(500).json(err); });
-    } else {
-        return res.status(401).json({ message: 'Unauthorized' });
     }
+    if (userService.checkUserIsDelivery(token)) {
+        return userService.updateLocation(req.params.id, req.body.location)
+        .then((order) => { res.status(200).json(order); })
+        .catch((err) => { res.status(500).json(err); });
+    }
+    // else {
+    //     return res.status(401).json({ message: 'Unauthorized' });
+    // }
 })
 
 /**

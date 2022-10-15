@@ -134,9 +134,18 @@ async function getUserName(id) {
 async function updateStatus(id, status) {
     // validate if status is voolean
     let query = { _id: id.toString().trim() , status: status.toString().toLowerCase()};
+
     const order = await userModel.findByIdAndUpdate(query._id, {status: query.status}, { new: true });
     if (!order) { throw new Error('Order not found'); }
     return order.toJSON();
+}
+
+async function updateLocation(id, location) {
+    let query = { _id: id.toString().trim(), location: location.toString().trim() };
+    const user = await userModel.findById(query._id);
+    if (!user) { throw new Error('User not found'); }
+    const userData = await userModel.findByIdAndUpdate(query._id, {location: query.location}, { new: true });
+    return userData.toJSON();
 }
 
 async function changePassword(id, oldPassword, newPassword) {
@@ -164,5 +173,6 @@ module.exports = {
     getUserID,
     getUserName,
     updateStatus,
+    updateLocation,
     changePassword
 };

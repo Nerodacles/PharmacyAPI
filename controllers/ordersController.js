@@ -298,7 +298,7 @@ router.post('/', async (req, res, next) => {
 router.patch('/status/:id', (req, res, next) => {
     let token = req.headers.authorization;
     if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
-    if (!userService.checkUserIsAdmin(token) || !userService.checkUserIsDelivery(token)) {
+    if (userService.checkUserIsAdmin(token) || userService.checkUserIsDelivery(token)) {
         orderService.updateStatus(req.params.id, req.body.status)
         .then((order) => { res.status(200).json(order); })
         .catch((err) => { res.status(500).json(err); });

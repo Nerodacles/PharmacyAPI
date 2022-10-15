@@ -126,7 +126,7 @@ router.post('/post', upload.single('cover'), async (req, res) => {
             name: req.body.name,
             description: req.body.description,
             stock: req.body.stock,
-            cover: path.join('pharmacy.jmcv.codes/uploads/' + req.file.filename.trim()),
+            cover: path.join('pharmacy.jmcv.codes/uploads/' + req.file?.filename.trim()),
             price: req.body.price,
         })
         try {
@@ -359,11 +359,11 @@ router.get('/getOne/:id', async (req, res) => {
 */
 
 //Update by ID Method
-router.patch('/update/:id', upload.single('cover'), async (req, res) => {
+router.patch('/update/:id', upload.single('cover'),  (req, res) => {
     let token = req.headers.authorization
-    if (await !userService.checkUserIsAdmin(token)) { res.status(401).json({error: 'unauthorised'}) }   
+    if (!userService.checkUserIsAdmin(token)) { res.status(401).json({error: 'unauthorised'}) }   
     else {
-        await drugService.updateDrug(req.params.id, req.body, req.file)
+        drugService.updateDrug(req.params.id, req.body, req?.file)
         .then(data => res.json({message: 'Drug updated'}))
         .catch(error => res.status(500).json({message: error.message}))
     }
@@ -419,4 +419,3 @@ router.delete('/delete/:id', async (req, res) => {
 })
 
 module.exports = router;
-module.exports.Model = Model;
