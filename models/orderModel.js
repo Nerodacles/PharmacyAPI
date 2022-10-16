@@ -7,6 +7,19 @@ const drugs = new mongoose.Schema({
     quantity: { type: Number, required: true }
 }, { _id : false });
 
+const moreDetails = new mongoose.Schema({
+    direction: { type: String, required: true },
+    street: { type: String, required: true },
+    houseNumber: { type: String, required: true },
+    reference: { type: String, required: true }
+});
+
+const payment = new mongoose.Schema({
+    paymentMethod: { type: String, default: 'cash' },
+    cash: { type: String },
+    paypal: { type: String },
+});
+
 const orderSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     drugs: [drugs],
@@ -16,6 +29,8 @@ const orderSchema = new mongoose.Schema({
     createdTime: { type: Date, default: Date.now },
     status: { type: Boolean, default: true },
     location: { type: Object, default: {} },
+    payment: {payment},
+    moreDetails: {moreDetails}
 })
 
 orderSchema.set('toJSON', {

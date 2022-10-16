@@ -80,7 +80,6 @@ router.get('/user/:id', async (req, res, next) => {
     if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
     if ( await !userService.checkUserIsAdmin(token) || await !userService.checkUserIsDelivery(token)) { return res.status(401).json({ message: 'Unauthorized' }); }
 
-    let query = { user: req.params.id.toString().trim() };
     orderService.getOrdersByUser(req.params.id)
     .then((orders) => {res.status(200).json(orders);})
     .catch((err) => { res.status(500).json(`${err}`); });
@@ -212,18 +211,44 @@ router.get('/:id', async (req, res, next) => {
 *             lng:
 *               type: number
 *               description: Longitude
+*       - name: payment
+*         description: Payment
+*         in: body
+*         required: true
+*         type: array
+*         items:
+*           type: object
+*           properties:
+*             type:
+*               type: string
+*               description: Type of payment (cash, paypal)
+*             cash:
+*               type: string
+*               description: Amount of payment
+*             paypal:
+*               type: string
+*               description: Info for the paypal payment
+*       - name: moreDetails
+*         description: More details
+*         in: body
+*         required: true
+*         type: object
+*         properties:
+*           direction:
+*             type: string
+*             description: Direction
+*           street:
+*             type: string
+*             description: Street
+*           houseNumber:
+*             type: string
+*             description: House number
+*           reference:
+*             type: string
+*             description: Reference
 *     responses:
 *       200:
-*         description: Orders
-*         schema:
-*           type: Array
-*           properties:
-*             id:
-*               type: string
-*               description: Id of the favorite
-*           example:
-*             - "123456789"
-*             
+*         description: Order created    
 *       400:
 *         description: Bad request
 *       401:
@@ -238,6 +263,8 @@ router.post('/', async (req, res, next) => {
         orderService.createOrder({
             drugs: req.body.drugs,
             location: req.body.location,
+            payment: req.body.payment,
+            moreDetails: req.body.moreDetails,
             user: userID
         })
         .then((order) => { return res.status(200).json(order); })
