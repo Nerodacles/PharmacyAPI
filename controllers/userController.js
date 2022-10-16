@@ -197,7 +197,7 @@ router.get('/All', async (req, res, next) => {
 /**
 * @swagger
 * /users/changePassword:
-*   get:
+*   patch:
 *     tags:
 *       - Users
 *     security: []
