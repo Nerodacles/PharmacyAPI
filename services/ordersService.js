@@ -69,6 +69,23 @@ async function getOrdersByUser(userID) {
     return orders.filter(order => order.status == true);
 }
 
+async function getOrdersByDelivery(userID) {
+    let orderIndex, drugIndex = 0;
+    const orders = await orderModel.find({delivery: userID});
+    if (!orders) { throw new Error('Orders not found'); }
+    for (orderIndex in orders) {
+        let newOrder = orders[orderIndex].toJSON();
+        newOrder.user = await userService.getUserName(newOrder.user);
+        orders[orderIndex] = newOrder;
+        for (drugIndex in orders[orderIndex].drugs) {
+            let newDrug = orders[orderIndex].drugs[drugIndex];
+            newDrug.cover = await drugService.getCoverImage(newDrug.id.toString());
+            orders[orderIndex].drugs[drugIndex] = newDrug;
+        }
+    }
+    return orders.filter(order => order.status == true && order.delivered === 'on the way');
+}
+
 async function getOrderByProductID(id) {
     let query = { "_id": id.toString().trim().toLowerCase()};
     let orderIndex, drugIndex = 0;
@@ -168,6 +185,7 @@ module.exports = {
     getOrder,
     updateStatus,
     getOrdersByUser,
+    getOrdersByDelivery,
     checkIfUserIsOwner,
     getOrderByProductID
 };

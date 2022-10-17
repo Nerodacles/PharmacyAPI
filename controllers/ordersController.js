@@ -87,6 +87,46 @@ router.get('/user/:id', async (req, res, next) => {
 
 /**
 * @swagger
+* /orders/delivery/{id}:
+*   get:
+*     tags:
+*       - Orders
+*     security:
+*       - ApiKeyAuth: []
+*     summary: Get Delivery Orders
+*     description: Get Delivery Orders
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Orders
+*         schema:
+*           type: Array
+*           properties:
+*             id:
+*               type: string
+*               description: Id of the order
+*           example:
+*             - "123456789"
+*             
+*       400:
+*         description: Bad request
+*       401:
+*         description: Unauthorized
+*/
+
+router.get('/delivery/:id', async (req, res, next) => {
+    let token = req.headers.authorization;
+    if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
+    if ( await !userService.checkUserIsAdmin(token) || await !userService.checkUserIsDelivery(token)) { return res.status(401).json({ message: 'Unauthorized' }); }
+
+    orderService.getOrdersByDelivery(req.params.id)
+    .then((orders) => {res.status(200).json(orders);})
+    .catch((err) => { res.status(500).json(`${err}`); });
+})
+
+/**
+* @swagger
 * /orders/product/{id}:
 *   get:
 *     tags:
@@ -158,7 +198,7 @@ router.get('/product/:id', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
     let token = req.headers.authorization;
     if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
-    if ( await !userService.checkUserIsAdmin(token) || await !userService.checkUserIsDelivery(token) || await orderService.checkIfUserIsOwner(token, req.params.id) ) {
+    if ( !userService.checkUserIsAdmin(token) || !userService.checkUserIsDelivery(token) || orderService.checkIfUserIsOwner(token, req.params.id) ) {
         orderService.getOrder(req.params.id)
         .then((order) => {res.status(200).json(order);})
         .catch((err) => { res.status(500).json(`${err}`); });
@@ -276,7 +316,7 @@ router.post('/', async (req, res, next) => {
 
 /**
 * @swagger
-* /status/{id}:
+* /orders/status/{id}:
 *   patch:
 *     tags:
 *       - Orders
@@ -336,7 +376,7 @@ router.patch('/status/:id', (req, res, next) => {
 
 /**
 * @swagger
-* /accept/{id}:
+* /orders/accept/{id}:
 *   post:
 *     tags:
 *       - Orders
@@ -386,7 +426,7 @@ router.post('/accept/:id', (req, res, next) => {
 
 /**
 * @swagger
-* /deliver/{id}:
+* /orders/deliver/{id}:
 *   post:
 *     tags:
 *       - Orders
