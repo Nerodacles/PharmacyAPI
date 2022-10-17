@@ -154,7 +154,6 @@ async function getUserID(token) {
 
 async function getUserName(id) {
     let userData = await userModel.findById(id)
-    console.log(userData?.username)
     return userData?.username
 }
 
