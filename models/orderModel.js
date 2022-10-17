@@ -12,13 +12,18 @@ const moreDetails = new mongoose.Schema({
     street: { type: String, required: true },
     houseNumber: { type: String, required: true },
     reference: { type: String, required: true }
-});
+}, { _id : false });
 
 const payment = new mongoose.Schema({
     paymentMethod: { type: String, default: 'cash' },
     cash: { type: String },
     paypal: { type: String },
-});
+}, { _id : false });
+
+const location = new mongoose.Schema({
+    latitude: { type: String, required: true },
+    longitude: { type: String, required: true },
+}, { _id : false });
 
 const orderSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -28,9 +33,9 @@ const orderSchema = new mongoose.Schema({
     delivery: { type: String },
     createdTime: { type: Date, default: Date.now },
     status: { type: Boolean, default: true },
-    location: { type: Object, default: {} },
-    payment: {payment},
-    moreDetails: {moreDetails}
+    location: location,
+    payment: payment,
+    moreDetails: moreDetails
 })
 
 orderSchema.set('toJSON', {
