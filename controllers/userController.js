@@ -316,6 +316,56 @@ router.get('/:id', (req, res, next) => {
     .catch(err => next(err))
 })
 
+/**
+* @swagger
+* /users/{id}:
+*   get:
+*     tags:
+*       - Users
+*     security: []
+*     summary: Get a user data
+*     description: Get a user data
+*     produces:
+*       - application/json
+*     parameters:
+*       - in: path
+*         name: id
+*         description: User id
+*         required:
+*           - id
+*         properties:
+*           id:
+*             type: string
+*     responses:
+*       200:
+*         description: User found
+*         schema:
+*           type: object
+*           properties:
+*             id:
+*               type: string
+*             role:
+*               type: string
+*             username:
+*               type: string
+*             email:
+*               type: string
+*             date:
+*               type: string
+*           example:
+*             id: 62ae1de392d3f0b8a6
+*             username: test
+*             email: test@test.com
+*             role: user
+*             date: 2020-01-01T00:00:00.000Z
+*       400:
+*         description: Bad request
+*       401:
+*         description: Unauthorized
+*       500:
+*         description: User is not found
+*/
+
 router.patch('/:id', async (req, res, next) => {
     let token = req.headers.authorization;
     if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }

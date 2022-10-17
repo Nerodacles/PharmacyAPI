@@ -1,5 +1,10 @@
 const mongoose = require("mongoose");
 
+const location = new mongoose.Schema({
+    longitude: { type: Number, required: true },
+    latitude: { type: Number, required: true },
+});
+
 const UserSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true},
     email: { type: String, required: true, unique: true },
@@ -9,7 +14,7 @@ const UserSchema = new mongoose.Schema({
     date: { type: Date, default: Date.now() },
     favorites: { type: Array, default: [] },
     status: { type: Boolean, default: true },
-    location: { type: Object, default: {} },
+    location: location,
 });
 
 UserSchema.set('toJSON', {

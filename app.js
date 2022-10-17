@@ -108,18 +108,17 @@ const PORT = 8087;
 const limiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1h
   max: async (req, response) => {
-    if (await userService.checkUserIsAdmin(req.headers.authorization)) return 0
-		else return 100
+    if (await userService.checkUserIsAdmin(req.headers.authorization) || await userService.checkUserIsDelivery(req.headers.authorization) ) return 0
+		else return 200
 	},
   keyGenerator: (req, res) => req.header('x-real-ip'),
   message: async (req, response) => {
-		if (await userService.checkUserIsAdmin(req.headers.authorization)) return 'You can make infinite requests every hour.'
+		if (await userService.checkUserIsAdmin(req.headers.authorization) || await userService.checkUserIsDelivery(req.headers.authorization) ) return 'You can make infinite requests every hour.'
 		else return 'You can only make 100 requests every hour.'
 	}
 });
 
 app.use(limiter)
-// app.set('trust proxy', 3)
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
