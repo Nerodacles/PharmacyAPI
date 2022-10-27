@@ -404,7 +404,6 @@ router.patch('/update/:id', upload.single('cover'),  (req, res) => {
 *         description: Unauthorized
 */
 
-//Delete by ID Method
 router.delete('/delete/:id', async (req, res) => {
     let token = req.headers.authorization
     let user = await userService.checkUserIsAdmin(token)
@@ -417,6 +416,15 @@ router.delete('/delete/:id', async (req, res) => {
         }
         catch (error) { res.status(400).json({ message: error.message }) }
     }
+})
+
+router.get('/topDrugs', async (req, res) => {
+    try {
+        getTopDrugs()
+        .then(data => res.json({data}))
+        .catch(error => res.status(500).json({message: error.message}))
+    }
+    catch (error) { res.status(400).json({ message: error.message }) }
 })
 
 module.exports = router;

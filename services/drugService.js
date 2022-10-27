@@ -1,5 +1,6 @@
 const Model = require('../models/model.js')
 const tagsService = require('../services/tagsService.js')
+const orderModel = require('../models/orderModel.js')
 let path = require('path');
 
 async function modifyTags(drugID, tags) {
@@ -45,8 +46,31 @@ async function updateDrug(id, drug, image) {
     return updatedDrug.toJSON();
 }
 
+// top 5 drugs sold
+async function getTopDrugs() {
+    const drugs = await orderModel.aggregate([
+        { $unwind: "$items" },
+        { $group: { _id: "$items.drug", total: { $sum: "$items.quantity" } } },
+        { $sort: { total: -1 } },
+        { $limit: 5 },
+        { $lookup: { from: "drugs", localField: "_id", foreignField: "_id", as: "drug" } },
+        { $unwind: "$drug" },
+        { $project: { _id: 0, name: "$drug.name", total: 1 } }
+    ])
+    return drugs
+}
+
+async function getDrug(id) {
+    let query = { _id: id.trim() }
+    const drug = await Model.findById(query);
+    if (!drug) { throw new Error('Drug not found'); }
+    return drug.toJSON();
+}
+
 module.exports = {
     modifyTags,
+    getDrug,
     getCoverImage,
     updateDrug,
+    getTopDrugs
 };

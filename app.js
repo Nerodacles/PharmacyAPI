@@ -30,6 +30,7 @@ let indexRouter = require('./routes/index');
 let apiRouter = require('./routes/api');
 let healthRouter = require('./routes/health');
 let uploadsRouter = require('./routes/uploads');
+let paypalRouter = require('./routes/paypal');
 
 // Service
 let userService = require('./services/userService.js');
@@ -144,6 +145,7 @@ app.use('/uploads', uploadsRouter);
 app.use('/tags', tags);
 app.use('/orders', orders);
 app.use('/search', search);
+app.use('/paypal', paypalRouter);
 
 // middleware for authenticating token submitted with requests
 auth.authenticateToken.unless = unless;
