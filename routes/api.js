@@ -262,7 +262,6 @@ router.get('/getAll', async (req, res) => {
 *         description: Drug is not found
 */
 
-//Get by ID Method
 router.get('/getOne/:id', async (req, res) => {
     try{
         const data = await Model.findById(req.params.id);
@@ -359,7 +358,6 @@ router.get('/getOne/:id', async (req, res) => {
 *         description: Drug not found
 */
 
-//Update by ID Method
 router.patch('/update/:id', upload.single('cover'),  (req, res) => {
     let token = req.headers.authorization
     if (!userService.checkUserIsAdmin(token)) { res.status(401).json({error: 'unauthorised'}) }   
@@ -418,9 +416,43 @@ router.delete('/delete/:id', async (req, res) => {
     }
 })
 
+/**
+* @swagger
+* /api/topDrugs:
+*   get:
+*     tags:
+*       - Drugs
+*     security: []
+*     summary: Get top drugs
+*     description: Get top drugs
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Drug is found
+*         schema:
+*           type: object
+*           properties:
+*             name:
+*               type: string
+*               description: Name of the drug
+*             total:
+*               type: number
+*               description: Total of the drug
+*           example:
+*             name: Omeprazol
+*             total: 10
+*       400:
+*         description: Bad request
+*       401:
+*         description: Unauthorized
+*       500:
+*         description: Drug is not found
+*/
+
 router.get('/topDrugs', async (req, res) => {
     try {
-        getTopDrugs()
+        drugService.getTopDrugs()
         .then(data => res.json({data}))
         .catch(error => res.status(500).json({message: error.message}))
     }
