@@ -23,6 +23,8 @@ jobs:
           echo "PASSWORDADMIN=${{ secrets.PASSWORDADMIN }}" >> .env
           echo "TOKEN_SECRET=${{ secrets.TOKEN_SECRET }}" >> .env
           echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+          echo "PAYPAL_CLIENT_ID=${{ secrets.PAYPAL_CLIENT_ID }}" >> .env
+          echo "PAYPAL_CLIENT_SECRET=${{ secrets.PAYPAL_CLIENT_SECRET }}" >> .env
       - name: Build the stack
         run: docker-compose pull && docker-compose up -d --force-recreate
         
