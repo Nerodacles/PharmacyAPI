@@ -23,7 +23,7 @@ router.get("/success", function(req, res, next){
 
 router.get("/cancel", function(req, res, next){ res.sendStatus(400) })
 
-router.post('/', function(req, res, next) {
+router.get('/', function(req, res, next) {
     let floatDOP = 0.019
 
     if (req.body.items){
