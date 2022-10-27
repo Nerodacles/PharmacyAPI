@@ -76,7 +76,7 @@ router.post('/', async function(req, res, next) {
         } else {
             res.send({link: payment.links[1].href})
         }
-    });
-});
+    })
+})
 
 module.exports = router;

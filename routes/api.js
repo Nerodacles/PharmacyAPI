@@ -420,7 +420,7 @@ router.delete('/delete/:id', async (req, res) => {
 
 router.get('/topDrugs', async (req, res) => {
     try {
-        getTopDrugs()
+        drugService.getTopDrugs()
         .then(data => res.json({data}))
         .catch(error => res.status(500).json({message: error.message}))
     }

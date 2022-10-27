@@ -168,6 +168,7 @@ async function deliverOrder(token, id) {
         const order = await orderModel.findById(query);
         if ((order.status && order.delivered == 'on the way' && order.delivery == delivery) || (order.status == true && isAdmin)) {
             order.delivered = 'yes';
+            order.deliveredDate = new Date();
             const newOrder = await orderModel.findByIdAndUpdate(query, order, { new: true });
             if (!newOrder) { throw new Error('Order not found'); }
             return newOrder.toJSON();
