@@ -30,6 +30,7 @@ const orderSchema = new mongoose.Schema({
     drugs: [drugs],
     totalPrice: { type: Number, required: true },
     delivered: { type: String, default: 'no' },
+    deliveredDate: { type: Date },
     delivery: { type: String },
     createdTime: { type: Date, default: Date.now },
     status: { type: Boolean, default: true },
