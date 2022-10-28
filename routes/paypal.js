@@ -21,6 +21,7 @@ router.get("/success", function(req, res, next){
             console.log(error.response)
             throw error
         } else {
+            window.postMessage(JSON.stringify(payment), '*');
             res.send(JSON.stringify(payment))
         }
     })
