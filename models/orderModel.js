@@ -17,7 +17,7 @@ const moreDetails = new mongoose.Schema({
 const payment = new mongoose.Schema({
     paymentMethod: { type: String, default: 'cash' },
     cash: { type: String },
-    paypal: { type: String },
+    paypal: { type: Object },
 }, { _id : false });
 
 const location = new mongoose.Schema({
