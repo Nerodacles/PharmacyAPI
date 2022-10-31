@@ -405,7 +405,6 @@ router.patch('/status/:id', (req, res, next) => {
 *               description: Id of the favorite
 *           example:
 *             - "123456789"
-*             
 *       400:
 *         description: Bad request
 *       401:
@@ -419,6 +418,55 @@ router.post('/accept/:id', (req, res, next) => {
         orderService.acceptOrder(token, req.params.id)
         .then((order) => { res.status(200).json(order); })
         .catch((err) => { res.status(500).json(`${err}`); });
+    } else {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+})
+
+/**
+* @swagger
+* /orders/cancel/{id}:
+*   post:
+*     tags:
+*       - Orders
+*     security:
+*       - ApiKeyAuth: [admin, delivery]
+*     summary: Cancel Order
+*     description: Cancel Order only if the user is admin or delivery
+*     produces:
+*       - application/json
+*     consumes:
+*       multipart/form-data
+*     parameters:
+*       - name: id
+*         description: Order Id
+*         in: path
+*         required: true
+*         type: string
+*     responses:
+*       200:
+*         description: Orders
+*         schema:
+*           type: Array
+*           properties:
+*             id:
+*               type: string
+*               description: Id of the favorite
+*           example:
+*             - "123456789"
+*       400:
+*         description: Bad request
+*       401:
+*         description: Unauthorized
+*/
+
+router.post('/cancel/:id', (req, res, next) => {
+    let token = req.headers.authorization;
+    if (!token) { return res.status(401).json({ message: 'Unauthorized' }); }
+    if (userService.checkUserIsAdmin(token) || userService.checkUserIsDelivery(token)) {
+        orderService.cancelOrder(token, req.params.id)
+        .then((order) => { res.status(200).json(order) })
+        .catch((err) => { res.status(500).json(`${err}`) })
     } else {
         return res.status(401).json({ message: 'Unauthorized' });
     }

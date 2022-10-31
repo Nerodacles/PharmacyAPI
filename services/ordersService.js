@@ -158,6 +158,25 @@ async function acceptOrder(token, id) {
     }
 }
 
+async function cancelOrder(token, id){
+    const isDelivery = await userService.checkUserIsDelivery(token);
+    const delivery = await userService.getUserID(token);
+    let query = { _id: id.toString().trim().toLowerCase() };
+
+    if (isDelivery) {
+        const order = await orderModel.findById(query);
+        if (order.status) {
+            order.delivered = 'no'
+            order.delivery = delivery
+            const newOrder = await orderModel.findByIdAndUpdate(query, order, { new: true });
+            if (!newOrder) { throw new Error('Order not found'); }
+            return newOrder.toJSON();
+        } else {
+            throw new Error('Order already canceled');
+        }
+    }
+}
+
 async function deliverOrder(token, id) {
     const isDelivery = await userService.checkUserIsDelivery(token);
     const isAdmin = await userService.checkUserIsAdmin(token);
@@ -188,5 +207,6 @@ module.exports = {
     getOrdersByUser,
     getOrdersByDelivery,
     checkIfUserIsOwner,
-    getOrderByProductID
-};
+    getOrderByProductID,
+    cancelOrder
+}
