@@ -26,7 +26,7 @@
     "express-unless": "^2.1.2",
     "express-validator": "^6.14.2",
     "fs-extra": "^10.1.0",
-    "got": "^12.5.1",
+    "got": "^12.5.2",
     "helmet": "^6.0.0",
     "http-errors": "~2.0.0",
     "jsonwebtoken": "^8.5.1",
