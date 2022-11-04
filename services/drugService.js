@@ -60,6 +60,13 @@ async function getTopDrugs() {
     return drugs
 }
 
+async function getDrugTags(id) {
+    let query = { _id: id.trim() }
+    const drug = await Model.findById(query);
+    if (!drug) { throw new Error('Drug not found'); }
+    return drug.tags
+}
+
 async function getDrug(id) {
     let query = { _id: id.trim() }
     const drug = await Model.findById(query);
@@ -72,5 +79,6 @@ module.exports = {
     getDrug,
     getCoverImage,
     updateDrug,
-    getTopDrugs
+    getTopDrugs,
+    getDrugTags
 };
