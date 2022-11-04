@@ -18,7 +18,6 @@ router.get("/success", function(req, res, next){
 
     paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
         if (error) {
-            console.log(error.response)
             throw error
         } else {
             res.send(JSON.stringify(payment))
@@ -63,7 +62,7 @@ router.post('/', async function(req, res, next) {
                 item_list: {items: items},
                 amount: {
                     currency: "USD",
-                    total: totalAmount
+                    total: totalAmount.toFixed(2)
                 },
                 description: "Pago por los medicamentos mediante PharmacyAPP."
             }

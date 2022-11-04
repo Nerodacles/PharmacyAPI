@@ -40,6 +40,7 @@ async function getOrders() {
         for (drugIndex in orders[orderIndex].drugs) {
             let newDrug = orders[orderIndex].drugs[drugIndex];
             newDrug.cover = await drugService.getCoverImage(newDrug.id.toString());
+            newDrug.tags = await drugService.getDrugTags(newDrug.id.toString());
             orders[orderIndex].drugs[drugIndex] = newDrug;
         }
     }
