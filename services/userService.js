@@ -13,10 +13,10 @@ async function login({ username, password }) {
             if (!user.status) {
                 throw new Error('User not found');
             }
-            
+
             // Generate a token
             const token = auth.generateAccessToken(username);
-    
+
             // call toJSON method applied during model instantiation
             return {...user.toJSON(), token}
         }
@@ -28,9 +28,9 @@ async function login({ username, password }) {
 }
 
 async function register(params){
-    let query = { 
-        username: params.username.toLowerCase().trim().toString(), 
-        password: params.password.trim().toString(), 
+    let query = {
+        username: params.username.toLowerCase().trim().toString(),
+        password: params.password.trim().toString(),
         email: params.email.trim().toString(),
         phone: params.phone.trim().toString(),
     }
@@ -63,8 +63,8 @@ async function register(params){
     query.username = query.username.replace(/[^a-z0-9_\.]/g, '');
     query.email = query.email.replace(/[^a-z0-9_\.@]/g, '');
     query.username = query.username.replace('.', '');
-    
-    // replace all but numbers 
+
+    // replace all but numbers
     query.phone = query.phone.replace(/[^0-9]/g, '');
 
     const user = new userModel({
@@ -100,7 +100,7 @@ async function modifyFavs(authToken, fav) {
 
     if (isUserNameValid(username)) {
         let usernameS = username.toLowerCase().trim()
-        const user = await userModel.findOne({usernameS});
+        const user = await userModel.findOne({username: usernameS});
         if (user.favorites.includes(fav)) { user.favorites = user.favorites.filter((favorite) => favorite !== fav) }
         else { user.favorites.push(fav) }
         await user.save()
@@ -113,7 +113,7 @@ async function getFavs(authToken) {
 
     if (isUserNameValid(username)) {
         let usernameS = username.toLowerCase().trim()
-        const user = await userModel.findOne({usernameS});
+        const user = await userModel.findOne({username: usernameS});
         return user.favorites
     }
 }
@@ -122,7 +122,7 @@ async function hasFavorite(authToken, id) {
     const username = auth.getUserByToken(authToken)?.data
     if (isUserNameValid(username)) {
         let usernameS = username.toLowerCase().trim()
-        const user = await userModel.findOne({usernameS});
+        const user = await userModel.findOne({username: usernameS});
         return user.favorites.includes(id)
     }
 }
@@ -177,7 +177,7 @@ async function updateLocation(id, location) {
 
 async function changePassword(token, oldPassword, newPassword) {
     let query = { token: token.toString().trim(), oldPassword: oldPassword.toString().trim(), newPassword: newPassword.toString().trim() };
-    
+
     let username = await auth.getUserByToken(query.token)
     if (!username) { throw new Error('User not found'); }
 
